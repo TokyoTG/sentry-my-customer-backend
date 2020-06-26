@@ -6,10 +6,10 @@ const User = new mongoose.Schema({
   first_name: { type: String, required: true }, 
   last_name: { type: String, required: true }, 
   email: { type: String, required: true,  unique: true }, 
-  is_active: { type: Boolean, default: 0 }, 
+  is_active: { type: Boolean, default: 0 },
   password: { type: String,  required: true }, 
   api_token: String, 
-  user_role: { type: String, default: "store_admin"}
+  user_role: { type: String, default: "store_admin" }
 }, { timestamps: true})
 
 module.exports = mongoose.model('user', User)

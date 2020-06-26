@@ -55,15 +55,45 @@
             <h4>Endpoints</h4>
             <ul>
                 <li>User register<strong> - /register/user or /register/customer</strong></li>
+                <h6>Body: </h6>
+                <ul  class="alert alert-primary">
+                    <li>phone_number</li>
+                    <li>first_name</li>
+                    <li>last_name</li>
+                    <li>email</li>
+                    <li>password</li>
+                </ul>
                 <li>User login<strong> - /login</strong></li>
+                <h6>Body: </h6>
+                <ul  class='alert alert-primary'>
+                    <li>phone_number</li>
+                    <li>password</li>
+                </ul>
                 <ul>
                     <h5 class="mt-2">Account Activation</h5>
                     <p>Also, a user is required to verify his/her phone number after registration in order to activate his/her account.</p>
-                    <li>Send SMS(OTP)<strong> - /auth/verify-phone</strong></li>
-                    <li>Verify token<strong> - /auth/verify</strong></li>
+                    <li>Send SMS(OTP)<strong> - /auth/verify-phone [POST]</strong></li>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>phone</li>
+                    </ul>
+                    <li>Verify token<strong> - /auth/verify [POST]</strong></li>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>id (from response in <strong>/auth/verify-phone</strong> )</li>
+                        <li>token</li>
+                    </ul>
                     <h5 class="mt-2">Account Recovery</h5>
-                    <li>Send password reset link <strong>- /forgot-password</strong></li>
-                    <li>Reset password<strong> - /reset-password</strong></li>
+                    <li>Send password reset link <strong>- /forgot-password [POST]</strong></li>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>Email address</li>
+                    </ul>
+                    <li>Reset password<strong> - /reset-password [POST]</strong></li>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>new_password</li>
+                    </ul>
                 </ul>
             </ul>
         </div>
@@ -72,34 +102,96 @@
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Create user<strong>- /user/new</strong></li>
-                <li>Retrieve all users<strong>- /user/all</strong></li>
-                <li>Retrieve user<strong> - /user/:user_id</strong></li>
-                <li>Update user<strong>- /user/update/:user_id</strong></li>
+                <li>Create user<strong>- /user/new [POST]</strong>
+                    <h6>Bosy: </h6>
+                    <ul class="alert alert-primary">
+                        <li>phone_number</li>
+                        <li>first_name</li>
+                        <li>last_name</li>
+                        <li>email</li>
+                        <li>password</li>
+                    </ul>
+                </li>
+                <li>Retrieve all users<strong>- /user/all [GET]</strong></li>
+                <li>Retrieve user<strong> - /user/:user_id [GET]</strong>
+                    <h6>Params</h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
+                <li>Update user<strong>- /user/update/:user_id</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>user_id</li>
+                    </ul>
+                    <h6>Body</h6>
+                    <ul class="alert alert-primary">
+                        <li>content[data]</li>
+                    </ul>
+                </li>
                 <li>Delete user (logical delete)<strong>- /user/delete/:user_id</strong></li>
             </ul>
         </div>
-        <div class="store" id="store">
-            <h1 class="">Store</h1>
+        <div>
+            <h1 class="store" id="store">Store</h1>
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Create store<strong> - /store/new</strong></li>
-                <li>Retrieve store <strong> - /store/:store_id</strong></li>
-                <li>Update store<strong> - /store/update/:store_id</strong></li>
-                <li>Delete store<strong> - /store/delete/:store_id</strong></li>
-                <li>View all user's stores<strong> - /store/all</strong></li>
+                <li>Create store<strong> - /store/new [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>store_name</li>
+                        <li>Phone_number</li>
+                        <li>shop_address</li>
+                        <li>tagline</li>
+                    </ul>
+                </li>
+                <li>Retrieve store <strong> - /store/:store_id [GET]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>store_id</li>
+                    </ul>
+                </li>
+                <li>Update store<strong> - /store/update/:store_id [PUT]</strong>
+                <h6>Params</h6>
+                <ul class="alert alert-primary">
+                    <li>Update locations</li>
+                </ul>
+                </li>
+                <li>Delete store<strong> - /store/delete/:store_id [DELETE]</strong>
+                    <h6>Params</h6>
+                    <ul class="alert alert-primary">
+                        <li>store_id</li>
+                    </ul>
+                </li>
+                <li>View all user's stores<strong> - /store/all [GET]</strong>
+                </li>
             </ul>
         </div>
-        <div class="user" id="complaint">
+        <div class="complaint" id="complaint">
             <h1 class="">Complaint</h1>
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Register new complaint<strong>- /complaint/new</strong></li>
-                <li>Retrieve all complaints<strong> - /complaint/all</strong></li>
-                <li>Update complaint<strong> - /complaint/update/:complaint_id</strong></li>
-                <li>Delete a complaint form<strong> - /complaint/delete/:complaint_id</strong></li>
+                <li>Register new complaint<strong>- /complaint/new [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>message</li>
+                    </ul>
+                </li>
+                <li>Retrieve all complaints<strong> - /complaint/all [GET]</strong></li>
+                <li>Update complaint<strong> - /complaint/update/:complaint_id [PUT]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>message</li>
+                    </ul>
+                </li>
+                <li>Delete a complaint form<strong> - /complaint/delete/:complaint_id [DETETE]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>complaint_id</li>
+                    </ul>
+                </li>
             </ul>
         </div>
         <div class="transaction" id="transaction">
@@ -107,10 +199,36 @@
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Add new transaction<strong>- /transaction/new</strong></li>
+                <li>Add new transaction<strong>- /transaction/new</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>amount</li>
+                        <li>interest</li>
+                        <li>total_amount</li>
+                        <li>description</li>
+                    </ul>
+                </li>
                 <li>View all transactions<strong> - /transaction/all</strong></li>
-                <li>view a single transaction<strong> - /transaction/:transaction_id UPDATE</strong></li>
-                <li>Update transaction<strong> - /transaction/update/:transaction_id</strong></li>
+                <li>view a single transaction<strong> - /transaction/:transaction_id [UPDATE]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>transaction_id</li>
+                    </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li></li>
+                    </ul>
+                </li>
+                <li>Update transaction<strong> - /transaction/update/:transaction_id</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>transaction_id</li>
+                    </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>Entries to update</li>
+                    </ul>
+                </li>
                 <li>Delete transaction (logical delete)<strong>- /transaction/delete/:transaction_id</strong></li>
             </ul>
         </div>
@@ -119,10 +237,35 @@
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Create customer<strong> - /customer/new</strong></li>
-                <li>Retrieve customer<strong> - /customer/:customer_id</strong></li>
-                <li>Update customer details<strong> - /customer/update/:customer_id</strong></li>
-                <li>Delete customer (logical delete)<strong> - /customer/delete/:customer_id</strong></li>
+                <li>Create customer<strong> - /customer/new [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>name</li>
+                        <li>phone_number</li>
+                    </ul>
+                </li>
+                <li>Retrieve customer<strong> - /customer/:customer_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
+                <li>Update customer details<strong> - /customer/update/:customer_id [PUT] </strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>Entries to update</li>
+                    </ul>
+                </li>
+                <li>Delete customer (logical delete)<strong> - /customer/delete/:customer_id [DELETE]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
             </ul>
         </div>
         <div class="notification" id="notification">
@@ -131,8 +274,18 @@
             <p>Notify a customer of outstanding payments or even send them a season's greeting. <br>This can e done via <strong>Email</strong> or <strong>SMS</strong></p>
             <h4>Endpoints</h4>
             <ul>
-                <li>Send SMS reminder<strong> - /reminder/sms/:customer_id</strong></li>
-                <li>Send Email reminder <strong> - /reminder/email/:customer_id</strong></li>
+                <li>Send SMS reminder<strong> - /reminder/sms/:customer_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
+                <li>Send Email reminder <strong> - /reminder/email/:customer_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
             </ul>
         </div>
         <div class="call" id="call">
@@ -141,7 +294,12 @@
             <h4>Endpoint</h4>
             <p>You can also call a customer using the below endpoint</p>
             <ul>
-                <li>Call a customer's number<strong>- /call/:customer_id</strong></li>
+                <li>Call a customer's number<strong>- /call/:customer_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

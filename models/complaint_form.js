@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const Complaint = new mongoose.Schema({
   user_ref_id: { 
     type: Schema.Types.ObjectId, 
-    ref: 'user' 
+    ref: 'user',
+    required: true
   },
   message: { 
     type: String, 
@@ -12,11 +13,16 @@ const Complaint = new mongoose.Schema({
   },
   store_ref_code: { 
     type: Schema.Types.ObjectId, 
-    ref: 'store' 
+    ref: 'store',
+    required: true
   },
   status: {
     type: String, default: "open"
   }
 }, { timestamps: true });
+
+Complaint.set('toJSON', {
+  virtuals: true
+})
 
 module.exports = mongoose.model('complaint', Complaint);

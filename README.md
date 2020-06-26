@@ -25,7 +25,7 @@ Step 2: Copy env.example to .env
 
 Step 3: npm run start
 
-Step 4: Go to http://localhost:5000
+Step 4: Go to http://localhost:3000
 
 A welcome message will come up with status code 200
 

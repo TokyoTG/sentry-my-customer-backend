@@ -2,6 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="226f30c2-19fd-4c3c-8328-92b07606ae6e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/util/joi_validator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/login_controler.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/login_controler.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/register_controler.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/register_controler.js" afterDir="false" />
+    </list>
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
     </list>
@@ -12,6 +18,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
     <execution>
       <executable />
     </execution>
@@ -19,6 +33,17 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="ProjectId" id="1dUooBtxZYwd5OAE2uJLl6OfeVX" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
   <component name="IgnoredFileRootStore">
     <option name="generatedRoots">
       <set>
@@ -35,6 +60,10 @@
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/controllers" />
+      <recent name="$PROJECT_DIR$/routes" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
@@ -63,15 +92,20 @@
       <updated>1592489205118</updated>
       <workItem from="1592489208290" duration="1161000" />
       <workItem from="1592490610324" duration="186000" />
+      <workItem from="1592595513475" duration="16015000" />
+      <workItem from="1592646119225" duration="44000" />
+      <workItem from="1592942181485" duration="4136000" />
+      <workItem from="1593019431738" duration="691000" />
+      <workItem from="1593040946754" duration="6292000" />
       <workItem from="1592490895256" duration="304000" />
       <workItem from="1592568830318" duration="2288000" />
       <workItem from="1592593055039" duration="2790000" />
       <workItem from="1592602266525" duration="7000" />
       <workItem from="1592628393393" duration="1609000" />
     </task>
-    <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
     <option name="version" value="1" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -86,5 +120,24 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="1172" height="268" key="GridCell.Tab.0.bottom" timestamp="1593045364015">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1172" height="268" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1593045364015" />
+    <state width="1172" height="268" key="GridCell.Tab.0.center" timestamp="1593045364014">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1172" height="268" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1593045364014" />
+    <state width="1172" height="268" key="GridCell.Tab.0.left" timestamp="1593045364011">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1172" height="268" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1593045364011" />
+    <state width="1172" height="268" key="GridCell.Tab.0.right" timestamp="1593045364014">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1172" height="268" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1593045364014" />
   </component>
 </project>

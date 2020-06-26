@@ -534,7 +534,7 @@ paths:
       tags:
       - "User"
       summary: "Update an existing User"
-      description: ""
+      description: "Updates a user by id, with key-value pairs"
       operationId: "updateUser"
       consumes:
       - "application/json"
@@ -558,12 +558,10 @@ paths:
           description: "Successful operation"
           schema:
             $ref: "#/definitions/User"
-        "400":
-          description: "Invalid ID supplied"
         "404":
           description: "User not found"
-        "405":
-          description: "Validation exception"
+        "500":
+          description: "Server Error"
   /user/delete/{userId}:
     delete:
       tags:

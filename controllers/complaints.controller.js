@@ -1,13 +1,25 @@
 const Complaint = require("../models/complaint_form");
+const User = require("../models/user");
 
 // Retieves all complaints
 exports.findAll = async (req, res) => {
   try {
     await Complaint.find()
       .sort({ createdAt: -1 })
-      .then(complaints => {
+      .then(async complaints => {
+        const finalResponse = [];
+        for (const iterator of complaints) {
+          const item = iterator.toJSON();
+          if (item.user_ref_id) {
+            const user = await User.findById(item.user_ref_id);
+            item.customer_first_name = user.first_name ? user.first_name : '';
+            item.customer_last_name = user.last_name ? user.last_name : '';
+            item.customer_email = user.email? user.email : '';
+          }
+          finalResponse.push(item);
+        }
         res.status(200).json({
-          data: complaints
+          data: finalResponse
         });
       });
   } catch (err) {
@@ -72,16 +84,29 @@ exports.deleteOne = async (req, res) => {
 // create and register new complaint
 exports.newComplaint = async (req, res) => {
   // validate message field
-  if (!req.body.message || "") {
+  const { message, store } = req.body;
+  const { email } = req.user;
+
+  if (!message) {
     return res.status(404).send({
       message: "Message field canot be empty"
     });
   }
 
+  if (!store) {
+    return res.status(404).send({
+      message: "Store reference ID is required"
+    });
+  }
+
+  const user = await User.findOne({ email });
+
   try {
     // create new complaint
     let complaint = await new Complaint({
-      message: req.body.message
+      user_ref_id: user._id,
+      message,
+      store_ref_code: store
     });
 
     let result = await complaint.save();
@@ -89,9 +114,10 @@ exports.newComplaint = async (req, res) => {
     res.status(200).json({
       data: result
     });
+
   } catch (err) {
     res.status(500).send({
-      message: "Error deleting complaint"
+      message: err
     });
   }
 };

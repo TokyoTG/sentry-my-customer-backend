@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bCrypt = require('bcryptjs');
+const joiValidator = require('../util/joi_validator');
 
 const UserModel = require('../models/user');
 const CustomerModel = require('../models/customer');
@@ -8,10 +9,25 @@ const CustomerModel = require('../models/customer');
 module.exports.loginUser = async (req, res, next) => {
     const { password, phone_number } = req.body;
 
+    const reqBody = {
+        phone_number: phone_number,
+        password: password,
+    };
+
+
+    //Validate the "reqBody" object using joiValidator function imported.
+    const {error, value} = await joiValidator.userLoginValidator.validate(reqBody);
+    //  Check if there is any validation error.
+    if (error) {
+        return res.status(400).json({
+            Error: error.details[0].message,
+        });
+    }
+
     //  Get instance of the
     const user = UserModel({
-        password: password,
-        phone_number: phone_number,
+        password: value.password,
+        phone_number: value.phone_number,
     });
 
     //  Check if the users phone persists in the DB
@@ -80,10 +96,25 @@ module.exports.loginUser = async (req, res, next) => {
 module.exports.loginCustomer = async (req, res, next) => {
     const { name, phone_number } = req.body;
 
+    const reqBody = {
+        phone_number: phone_number,
+        name: name,
+    };
+
+
+    //Validate the "reqBody" object using joiValidator function imported.
+    const {error, value} = await joiValidator.userLoginValidator.validate(reqBody);
+    //  Check if there is any validation error.
+    if (error) {
+        return res.status(400).json({
+            Error: error.details[0].message,
+        });
+    }
+
     //  Get instance of the
     const user = CustomerModel({
-        name: name,
-        phone_number: phone_number,
+        name: value.name,
+        phone_number: value.phone_number,
     });
 
     //  Check if the users phone persists in the DB
