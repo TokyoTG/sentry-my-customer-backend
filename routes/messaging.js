@@ -4,6 +4,6 @@ const messageController = require("../controllers/messageController");
 const jwt = require('jsonwebtoken')
 
 const auth = require('../auth/auth');
-router.post('/reminder/sms/:customer_id', messageController.sendMessage);
+router.post('/reminder/sms/:customer_id', auth, messageController.sendMessage);
 
 module.exports = router;
