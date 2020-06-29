@@ -1,16 +1,42 @@
 const User = require('../models/user.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const joiValidator = require('../util/joi_validator');
+const { body, validationResult } = require('express-validator/check');
+
+exports.validate = (method) => {
+    switch (method) {
+        case 'body': {
+            return [
+                body('phone_number').isInt(),
+                body('first_name').isLength({ min: 3 }),
+                body('last_name').isLength({ min: 3 }),
+                body('email').matches(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, "i"),
+                body('password').matches(/^[0-9a-zA-Z]{6,}$/, "i"),
+            ]
+        }
+    }
+}
 
 ///#region Get all Users.
 exports.all = (req, res) => {
     User.find({})
     .then(users => {
-        res.send(users);
+        res.status(200).json({
+            success: "true",
+            message: "Successfully retrieved all users",
+            data:{
+                statusCode: 200,
+                users: users
+            }
+        });
     }).catch(err => {
         res.status(500).send({
-            message: err.message || "Some error occurred while retrieving the users."
+            success: "false",
+            message: "Internal Error",
+            error: {
+                statusCode: 500,
+                message: "Could not retrive users due to an internal error"
+            }
         });
     });
 };
@@ -21,41 +47,22 @@ exports.all = (req, res) => {
 exports.new = async (req, res) => {
     const { first_name, last_name, email, password, phone_number } = req.body;
 
-    // Request that is sent
-    const reqBody = {
-        first_name, 
-        last_name, 
-        email, 
-        password, 
-        phone_number
-    }
-
-    // Validate Request body sent
-    const { error, value } = await joiValidator.userRegistrationValidator.validate(reqBody);
-
-    // Check Validation Error
-    if (error) {
-        return res.status(400).json({
-            error: error.details[0].message
-        });
-    }
-
     //  Create a Token that will be passed as the "api_token"
     const token = await jwt.sign({
-        name: value.first_name + value.last_name,
-        phone_number: value.phone_number,
-        email: value.email,
+        name: first_name + last_name,
+        phone_number: phone_number,
+        email: email,
     }, process.env.JWT_KEY, {
         expiresIn: "1d",
     });
 
 
     const newUser = new User({
-        phone_number: value.phone_number,
-        first_name: value.first_name,
-        last_name: value.last_name,
-        email: value.email,
-        password: value.password,
+        phone_number: phone_number,
+        first_name: first_name,
+        last_name: last_name,
+        email: email,
+        password: password,
         token: token
     })
 
@@ -68,7 +75,14 @@ exports.new = async (req, res) => {
     const userExists = await User.findOne({ phone_number: newUser.phone_number, email: newUser.email });
 
     if (userExists) {
-        return res.status(400).json({ message: 'Store owner already exists' });
+        return res.status(409).json({ 
+            success: "false",
+            message: "User already exists",
+            data: {
+                statusCode: 409,
+                conflict: userExists
+            }
+        });
     } else {
         await newUser.save();
 
@@ -86,43 +100,17 @@ exports.new = async (req, res) => {
             },
             (err, token, data) => {
                 if (err) throw err;
-                res.json({ token, data: newUser });
+                res.status(201).json({ 
+                    success: "true",
+                    message: "User created successfully",
+                    data: {
+                        token,
+                        newUser
+                    }
+                });
             }
         );
     }
-
-    // User.create(newUser, (err, user)=>{
-    //     if(err){
-    //         res.status(503).json({
-    //             status: "fail",
-    //             message: "Could not add user due to an internal error"
-    //         })
-    //     }else{
-    //         // res.status(201).json({
-    //         //     status: "success",
-    //         //     data: user
-    //         // })
-
-    //         const payload = {
-    //             newUser: {
-    //                 id: newUser.id
-    //             }
-    //         }
-
-    //         jwt.sign(
-    //             payload,
-    //             process.env.JWT_KEY,
-    //             {
-    //                 expiresIn: 360000
-    //             },
-    //             (err, token, data) => {
-    //                 if (err) throw err;
-    //                 res.json({ token, data: newUser });
-    //             }
-    //         );
-
-    //     }
-    // })
 }
 
 //#region Fnd a single user with a user_id
@@ -130,60 +118,40 @@ exports.getById = (req, res) => {
     User.findById(req.params.user_id)
     .then(user => {
         if(!user) {
-            return res.status(404).send({
-                message: "User not found with id " + req.params.user_id
+            return res.status(404).json({
+                success: "false",
+                message: "User not found" ,
+                error:{
+                    statusCode: 404,
+                    message: "User not found with id " + req.params.user_id
+                }
             });            
+        }else{
+            res.send(user);
         }
-        res.send(user);
     }).catch(err => {
         if(err.kind === 'ObjectId') {
-            return res.status(404).send({
-                message: "User not found with id " + req.params.user_id
+            return res.status(404).json({
+                success: "false",
+                    message: "User not found",
+                    error: {
+                        statusCode: 404,
+                        message: "User not found with id " + req.params.user_id
+                    }
             });                
+        }else{
+            return res.status(500).send({
+                success: "false",
+                    message: "Internal Error",
+                    error: {
+                        statusCode: 404,
+                        message: "Error finding user with id " + req.params.user_id
+                    }
+            });
         }
-        return res.status(500).send({
-            message: "Error retrieving user with id " + req.params.user_id
-        });
     });
 };
-//#endregion
 
-//#region Update a user the user_id 
-// exports.update = (req, res) => {
-//     // Validate Request
-//     if(!req.body.content) {
-//         return res.status(400).send({
-//             message: "Did not receive any update values"
-//         });
-//     }
-// else{
-//     // Find transaction and update it with the request body
-//     User.findByIdAndUpdate(req.params.user_id, req.body.content, {new: true})
-//     .then(user => {
-//         if(!user) {
-//             return res.status(404).send({
-//                 message: "User not found with id " + req.params.user_id
-//             });
-//         }
-//         res.send(user);
-//     }).catch(err => {
-//         if(err.kind === 'ObjectId') {
-//             return res.status(404).send({
-//                 message: "User not found with id " + req.params.user_id
-//             });                
-//         }
-//         return res.status(500).send({
-//             message: "Error updating user with id " + req.params.user_id
-//         });
-//         });
-// }};
-//#endregion
-
-
-// @route       PUT user/update/:user_id
-// @desc        User Updates his user details
-// @access      Public (no auth)
-// @author      buka4rill
 exports.update = async (req, res) => {
     // Pull out data from body
     const { first_name, last_name, phone_number } = req.body;
@@ -198,7 +166,14 @@ exports.update = async (req, res) => {
     try {
         let user = await User.findById(req.params.user_id);
 
-        if (!user) return res.status(404).json({ message: 'User not found!' });
+        if (!user) return res.status(404).json({
+            success: "false",
+            message: "User not found",
+            error:{
+                statusCode: 404,
+                message: "User with the provided details does not exist"
+            }
+         });
 
         // Update User
         user = await User.findByIdAndUpdate(req.params.user_id,
@@ -206,10 +181,23 @@ exports.update = async (req, res) => {
             { new: true });
 
         // Send updated user details   
-        res.json(user); 
+        res.status(201).json({
+            success: "true",
+            message: "User details updated successfully",
+            data:{
+                statusCode: 201,
+                data: user
+            }
+        }); 
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).json({
+            success: "false",
+            message: "Internal server error",
+            error:{
+                statusCode: 500,
+                message: "User details could not be updated"
+            }
+        });
     }
 };
 //#endregion
@@ -220,18 +208,42 @@ exports.delete = (req, res) => {
     .then(user => {
         if(!user) {
             return res.status(404).send({
-                message: "User not found with id " + req.params.user_id
+                success: "false",
+                    message: "User not found",
+                    error: {
+                        statusCode: 404,
+                        message: "User not found with id " + req.params.user_id
+                    }
             });
-        }
-        res.send({message: "User deleted successfully!"});
+        }else{
+        res.status(200).json({
+            success: "true",
+                message: "User deleted successfully",
+                error: {
+                    statusCode: 200,
+                    message: "User with id " + req.params.user_id +" has been deleted ",
+                    data: user
+                }
+        }); 
+    }
     }).catch(err => {
         if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).send({
-                message: "User not found with id " + req.params.user_id
+            return res.status(404).json({
+                success: "false",
+                    message: "User delete failed",
+                    error: {
+                        statusCode: 404,
+                        message: "User with id: " + req.params.user_id + " could not be found "
+                    }
             });                
         }
         return res.status(500).send({
-            message: "Could not delete user with id " + req.params.user_id
+            success: "false",
+                message: "User delete failed",
+                error: {
+                    statusCode: 404,
+                    message: "User with id: " + req.params.user_id + " could not be deleted due to an internal error"
+                }
         });
     });
 };

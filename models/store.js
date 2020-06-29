@@ -10,7 +10,7 @@ const Store = new mongoose.Schema({
       type: String,
       required: true
     },
-    Phone_number: {
+    phone_number: {
       type: String,
       required: true
     },
@@ -22,7 +22,10 @@ const Store = new mongoose.Schema({
       type: String,
       required: true
     },
-    email: String
+    email: {
+      type: String,
+      required: true
+}
 }, { timestamps: true })
 
 module.exports = mongoose.model('store', Store)

@@ -1,34 +1,30 @@
 const jwt = require("jsonwebtoken");
 const bCrypt = require("bcryptjs");
-const joiValidator = require("../util/joi_validator");
+const { body } = require('express-validator/check');
+const passport = require("passport");
 
 const UserModel = require("../models/user");
 const CustomerModel = require("../models/customer");
+
+exports.validate = (method) => {
+  switch (method) {
+      case 'login': {
+          return [
+              body('phone_number').isInt(),
+              body('password').matches(/^[0-9a-zA-Z]{6,}$/, "i"),
+          ]
+      }
+  }
+}
 
 //  Login User
 module.exports.loginUser = async (req, res, next) => {
   const { password, phone_number } = req.body;
 
-  const reqBody = {
-    phone_number: phone_number,
-    password: password,
-  };
-
-  //Validate the "reqBody" object using joiValidator function imported.
-  const { error, value } = await joiValidator.userLoginValidator.validate(
-    reqBody
-  );
-  //  Check if there is any validation error.
-  if (error) {
-    return res.status(400).json({
-      Error: error.details[0].message,
-    });
-  }
-
   //  Get instance of the
   const user = UserModel({
-    password: value.password,
-    phone_number: value.phone_number,
+    password: password,
+    phone_number: phone_number,
   });
 
   //  Check if the users phone persists in the DB
@@ -161,5 +157,28 @@ module.exports.loginCustomer = async (req, res, next) => {
     });
 };
 
-//  Login User
+//Sign in with facebook
+module.exports.fbLogin = passport.authenticate('facebook');
+
+module.exports.fbLoginCallback = function (req, res) {
+  if ( !req.user ) {
+    res.status(401).send({
+      success: false,
+      message: "Login with facebook failed",
+      error: {
+        code: 401,
+        message: "Login failed"
+      }
+    });
+  } else {
+    res.status(200).send({
+      success: true,
+      message: "Login successful",
+      data: {
+        user: req.user._json
+      }
+    });
+  }
+}
+
 module.exports.login;

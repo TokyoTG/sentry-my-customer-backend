@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const transactions = require('../controllers/transaction.controller.js');
-const jwt = require('jsonwebtoken')
-
 const auth = require('../auth/auth');
 
 // Create a new Transaction

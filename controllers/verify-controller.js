@@ -38,12 +38,13 @@ module.exports = {
              messagebird.verify.verify(id, token, (err, response) => {
                  if (err) {
                      res.status(err.statusCode).json({
-                         status: "Bad request",
-                         message: err
+                         success: "false",
+                         message: "Phone number could not be verified",
+                         error: err
                      });
                  } else {
                      res.status(200).json({
-                         status: "success",
+                         success: "true",
                          message: response
                      })
                  }

@@ -52,6 +52,11 @@
             <h1 class="">Authentication</h1>
             <hr>
             <p>Each user is assigned a unique api_token on registration which will be used in subsequent API calls</p>
+            <h4>How to pass the token</h4>
+            <p>To authenticate your call, you are to pass the provided API token in the header with the following key</p>
+            <ul class="alert alert-success">
+                <li>x-access-token</li>
+            </ul>
             <h4>Endpoints</h4>
             <ul>
                 <li>User register<strong> - /register/user or /register/customer</strong></li>
@@ -63,12 +68,15 @@
                     <li>email</li>
                     <li>password</li>
                 </ul>
-                <li>User login<strong> - /login</strong></li>
+                <li>User login<strong> - /login/user</strong></li>
                 <h6>Body: </h6>
                 <ul  class='alert alert-primary'>
                     <li>phone_number</li>
                     <li>password</li>
                 </ul>
+                <!-- FACEBOOK LOGIN -->
+                <li>Facebook login<strong> - /login/fb_login [GET]</strong></li>
+
                 <ul>
                     <h5 class="mt-2">Account Activation</h5>
                     <p>Also, a user is required to verify his/her phone number after registration in order to activate his/her account.</p>
@@ -206,6 +214,10 @@
                         <li>interest</li>
                         <li>total_amount</li>
                         <li>description</li>
+                        <li>transaction_name</li>
+                        <li>transaction_role</li>
+                        <li>store_name</li>
+                        <li>phone_number</li>
                     </ul>
                 </li>
                 <li>View all transactions<strong> - /transaction/all</strong></li>
@@ -279,11 +291,20 @@
                     <ul class="alert alert-primary">
                         <li>customer_id</li>
                     </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>message</li>
+                    </ul>
                 </li>
                 <li>Send Email reminder <strong> - /reminder/email/:customer_id [POST]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
                         <li>customer_id</li>
+                    </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>subject</li>
+                        <li>text</li>
                     </ul>
                 </li>
             </ul>

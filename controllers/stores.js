@@ -1,4 +1,5 @@
 const Store = require("./../models/store");
+const UserModel = require("../models/user");
 
 exports.createStore = async (req, res, next) => {
   if (
@@ -42,7 +43,8 @@ exports.createStore = async (req, res, next) => {
 
 exports.getAllStores = async (req, res, next) => {
   try {
-    let stores = await Store.find({}).select("-__v");
+    var { email } = req.user;
+    let stores = await Store.find({email}).select("-__v");
 
     if (!stores) {
       return res.status(404).json({
