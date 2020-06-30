@@ -1,5 +1,4 @@
-const Customer = require("../models/customer");
-const UserModel = require("../models/user");
+const UserModel = require("../models/store_admin");
 const { body } = require('express-validator/check');
 
 exports.validate = (method) => {
@@ -7,28 +6,35 @@ exports.validate = (method) => {
         case 'body': {
             return [
                 body('name').isLength({ min: 3 }),
-                body('phone').isInt()
             ]
         }
     }
 }
 
 exports.create = async (req, res) => {
-  const customer = new Customer({
-    name: req.body.name,
-    phone_number: req.body.phone,
-  });
+  
+  const id = req.params.current_user
+  console.log(id)
+  //get current user's id and add a new customer to it
+  UserModel.findById(id).catch(err =>{
+    res.send(err)
+  }).then(user =>{
+    console.log(user)
+    if(user.stores == [] || user.stores.length == 0){
+      res.status(403).json({
+        message: "please add a store before adding customers"
+      })
+    }
+  })
 
-  const result = await customer.save();
-
-  res.status(201).json({
-    status: true,
-    message: "Customer was created",
-    data: {
-      statusCode: 201,
-      customer: customer
-    },
-  });
+  // res.status(201).json({
+  //   status: true,
+  //   message: "Customer was created",
+  //   data: {
+  //     statusCode: 201,
+  //     customer: user
+  //   },
+  // });
 };
 
 exports.getById = (req, res) => {

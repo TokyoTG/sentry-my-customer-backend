@@ -1,11 +1,14 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
+const mongoose = require("mongoose"),
+	Transaction = require("./transaction")
 
-const Customer = mongoose.Schema({
-  user_ref_id: { type: Schema.Types.ObjectId, ref: 'user' },
-  name: { type: String, required: true},
-  phone_number: { type: Number, required: true},
-  email: { type: String, default: "Not set"}
-}, { timestamps: true})
 
-module.exports = mongoose.model('customer', Customer)
+const customerSchema = new mongoose.Schema({
+	name: { type: String, required: true },
+	phone_number: { type: String, default: "Not set" },
+	email: { type: String, default: "Not set" },
+	transactions: [
+		Transaction.schema
+	]
+}, { timestamps: true });
+
+module.exports = mongoose.model("customer", customerSchema);

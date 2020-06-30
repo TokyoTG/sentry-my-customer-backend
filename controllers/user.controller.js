@@ -1,4 +1,4 @@
-const User = require('../models/user.js');
+const User = require('../models/store_admin');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator/check');
@@ -8,9 +8,6 @@ exports.validate = (method) => {
         case 'body': {
             return [
                 body('phone_number').isInt(),
-                body('first_name').isLength({ min: 3 }),
-                body('last_name').isLength({ min: 3 }),
-                body('email').matches(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, "i"),
                 body('password').matches(/^[0-9a-zA-Z]{6,}$/, "i"),
             ]
         }
@@ -19,14 +16,16 @@ exports.validate = (method) => {
 
 ///#region Get all Users.
 exports.all = (req, res) => {
-    User.find({})
-    .then(users => {
+    const id = req.params.current_user
+    User.findById(id)
+    .then(user => {
+        const storeAssistants = user.assistants;
         res.status(200).json({
             success: "true",
-            message: "Successfully retrieved all users",
+            message: "Successfully retrieved all store assistants",
             data:{
                 statusCode: 200,
-                users: users
+                assistants: storeAssistants
             }
         });
     }).catch(err => {
@@ -49,9 +48,8 @@ exports.new = async (req, res) => {
 
     //  Create a Token that will be passed as the "api_token"
     const token = await jwt.sign({
-        name: first_name + last_name,
         phone_number: phone_number,
-        email: email,
+        password: password
     }, process.env.JWT_KEY, {
         expiresIn: "1d",
     });
@@ -59,11 +57,7 @@ exports.new = async (req, res) => {
 
     const newUser = new User({
         phone_number: phone_number,
-        first_name: first_name,
-        last_name: last_name,
-        email: email,
-        password: password,
-        token: token
+        token: token    
     })
 
     // Encrypt Password
@@ -72,7 +66,7 @@ exports.new = async (req, res) => {
     newUser.password = await bcrypt.hash(password, salt);
 
     // Check if Phone exists
-    const userExists = await User.findOne({ phone_number: newUser.phone_number, email: newUser.email });
+    const userExists = await User.findOne({ phone_number: newUser.phone_number });
 
     if (userExists) {
         return res.status(409).json({ 
@@ -153,15 +147,8 @@ exports.getById = (req, res) => {
 };
 
 exports.update = async (req, res) => {
-    // Pull out data from body
-    const { first_name, last_name, phone_number } = req.body;
-
     // Build data based on fields to be submited
-    const userFields = {};
-
-    if (first_name) userFields.first_name = first_name;
-    if (last_name) userFields.last_name = last_name;
-    if (phone_number) userFields.phone_number = phone_number;
+    const userFields = req.body;
 
     try {
         let user = await User.findById(req.params.user_id);

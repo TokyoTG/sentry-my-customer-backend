@@ -63,9 +63,6 @@
                 <h6>Body: </h6>
                 <ul  class="alert alert-primary">
                     <li>phone_number</li>
-                    <li>first_name</li>
-                    <li>last_name</li>
-                    <li>email</li>
                     <li>password</li>
                 </ul>
                 <li>User login<strong> - /login/user</strong></li>
@@ -145,13 +142,11 @@
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Create store<strong> - /store/new [POST]</strong>
+                <li>Create store<strong> - /store/new/:current_user [POST]</strong>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>store_name</li>
-                        <li>Phone_number</li>
                         <li>shop_address</li>
-                        <li>tagline</li>
                     </ul>
                 </li>
                 <li>Retrieve store <strong> - /store/:store_id [GET]</strong>
@@ -172,7 +167,7 @@
                         <li>store_id</li>
                     </ul>
                 </li>
-                <li>View all user's stores<strong> - /store/all [GET]</strong>
+                <li>View all user's stores<strong> - /store/all/:current_user [GET]</strong>
                 </li>
             </ul>
         </div>

@@ -5,7 +5,7 @@ const bodyValidator = require('../util/body_validator')
 
 const auth = require('../auth/auth');
 router.use("/customer", auth)
-router.post('/customer/new', customerController.validate('body'), bodyValidator, customerController.create)
+router.post('/customer/new/:current_user', customerController.validate('body'), bodyValidator, customerController.create)
 router.get('/customer/all', customerController.getAll)
 router.put('/customer/update/:customerId', customerController.validate('body'), bodyValidator, customerController.updateById)
 router.delete('/customer/delete/:customerId', customerController.deleteById)

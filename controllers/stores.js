@@ -1,69 +1,77 @@
 const Store = require("./../models/store");
-const UserModel = require("../models/user");
+const UserModel = require("../models/store_admin");
 
 exports.createStore = async (req, res, next) => {
+  console.log("here")
   if (
-    req.body.store_name === "" &&
-    req.body.Phone_number === "" &&
-    req.body.shop_address === "" &&
-    req.body.tagline === ""
-  ) {
+    req.body.store_name === "" || req.body.shop_address === "") {
     return res.status(500).json({
       status: "fail",
       message: error.message,
     });
   }
-
   try {
-    const storeExists = await Store.findOne({
-      store_name: req.body.store_name,
-    });
-    if (storeExists) {
-      return res.status(404).json({
-        status: "fail",
-        message: "Store already exists",
-      });
+    const id = req.params.current_user;
+    console.log(id)
+    const storeOwner = await UserModel.findById(id);
+    if (storeOwner) {
+     storeOwner.stores.push({
+       store_name: req.body.store_name,
+       shop_address: req.body.shop_address
+     })
+     storeOwner.save().catch(error =>{
+        res.send(error)
+     }).then(store =>{
+        res.status(201).json({
+          success: true,
+          message: "Store added successfully",
+          data: {
+            statusCode: 201,
+            store: store
+          }
+        })
+     })
     }
-
-    const store = await Store.create(req.body);
-    store.__v = undefined;
-    res.status(201).json({
-      status: "success",
-      data: {
-        store,
-      },
-    });
   } catch (error) {
     res.status(400).json({
-      status: "fail",
+      success: false,
       message: error.message,
+      error:{
+
+      }
     });
   }
 };
 
 exports.getAllStores = async (req, res, next) => {
+  //current user's id to find user
+  const id = req.params.current_user;
   try {
-    var { email } = req.user;
-    let stores = await Store.find({email}).select("-__v");
-
-    if (!stores) {
+    const store_admin = await UserModel.findById(id)
+    if (!store_admin) {
       return res.status(404).json({
         status: "fail",
         message: "Something went wrong",
       });
+    }else{
+      let stores = store_admin.stores;
+      res.status(200).json({
+        status: "success",
+        result: stores.length,
+        message: "Here are all your stores",
+        data: {
+          statusCode: 200,
+          stores
+        },
+      });
     }
-
-    res.status(200).json({
-      status: "success",
-      result: stores.length,
-      data: {
-        stores,
-      },
-    });
   } catch (error) {
     res.status(500).json({
-      status: "fail",
+      success: false,
       message: error.message,
+      error: {
+
+      }
     });
   }
 };

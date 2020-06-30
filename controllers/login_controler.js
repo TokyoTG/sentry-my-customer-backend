@@ -3,7 +3,7 @@ const bCrypt = require("bcryptjs");
 const { body } = require('express-validator/check');
 const passport = require("passport");
 
-const UserModel = require("../models/user");
+const UserModel = require("../models/store_admin");
 const CustomerModel = require("../models/customer");
 
 exports.validate = (method) => {
@@ -22,28 +22,25 @@ module.exports.loginUser = async (req, res, next) => {
   const { password, phone_number } = req.body;
 
   //  Get instance of the
-  const user = UserModel({
-    password: password,
-    phone_number: phone_number,
-  });
+  const user = UserModel({});
+  user.local.phone_number = phone_number;
+  user.local.password = password;
+  user.identifier = phone_number;
 
   //  Check if the users phone persists in the DB
-  await UserModel.findOne({ phone_number: user.phone_number })
+  await UserModel.findOne({ identifier: user.identifier })
     .then((userExist) => {
       if (userExist) {
         //  Go ahead to compare the password match.
         bCrypt
-          .compare(user.password, userExist.password)
+          .compare(user.local.password, userExist.local.password)
           .then((doPasswordMatch) => {
             if (doPasswordMatch) {
               //  Generate a login api_token for subsequent authentication.
               const apiToken = jwt.sign(
                 {
-                  phone_number: userExist.phone_number,
-                  email: userExist.email,
-                  password: user.password,
-                  is_active: userExist.is_active,
-                  user_role: userExist.user_role,
+                  phone_number: userExist.local.phone_number,
+                  password: user.local.password,
                 },
                 process.env.JWT_KEY,
                 {
@@ -51,18 +48,11 @@ module.exports.loginUser = async (req, res, next) => {
                 }
               );
               res.status(200).json({
+                success: true,
                 message: "You're logged in successfully.",
-                api_token: apiToken,
-                status: true,
-                user: {
-                  _id: userExist._id,
-                  phone_number: userExist.phone_number,
-                  first_name: userExist.first_name,
-                  last_name: userExist.last_name,
-                  email: userExist.email,
-                  is_active: userExist.is_active,
-                  password: userExist.password,
-                  user_role: userExist.user_role,
+                data: {
+                  statusCode: 200,
+                  user: userExist
                 },
               });
             } else {
@@ -75,6 +65,7 @@ module.exports.loginUser = async (req, res, next) => {
           .catch((error) => {
             res.status(500).json({
               Error: error,
+              status: "fail"
             });
           });
       } else {

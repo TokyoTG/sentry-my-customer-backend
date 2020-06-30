@@ -18,14 +18,19 @@ exports.findAll = async (req, res) => {
           }
           finalResponse.push(item);
         }
-        res.status(200).json({
+        res.status(200).send({
+          status: true,
+          message: 'Complains loaded',
           data: finalResponse
         });
       });
   } catch (err) {
-    console.log(err)
     res.status(500).send({
-      message: "Error occured while retriving complaints"
+      status: false,
+      message: "Error occured while retriving complaints",
+      data: {
+        message: "Error occured while retriving complaints"
+      }
     });
   }
 };
@@ -35,7 +40,11 @@ exports.update = async (req, res) => {
   // validating the message
   if (!req.body.message || "") {
     return res.status(404).send({
-      message: "Message field canot be empty"
+      status: false,
+      message: "Message field canot be empty",
+      data: {
+        message: "Message field canot be empty"
+      }
     });
   }
 
@@ -48,16 +57,26 @@ exports.update = async (req, res) => {
 
     if (!complaint) {
       res.status(404).send({
-        message: "Complaint not found"
+        status: false,
+        message: "Complaint not found",
+        data: {
+          message: "Complaint not found"
+        }
       });
     }
 
     res.status(200).send({
-      message: "Complaint successfully updated"
+      success: true,
+      message: "Complaint successfully updated",
+      data: {
+        message: "Complaint successfully updated"
+      }
     });
   } catch (err) {
     res.status(500).send({
-      message: "Error updating compliant"
+      status: false,
+      message: "Error updating compliant",
+      data: err
     });
   }
 };
@@ -68,15 +87,27 @@ exports.deleteOne = async (req, res) => {
     let complaint = await Complaint.findByIdAndRemove(req.params.id);
 
     if (!complaint) {
-      res.status(404).send("Complain not found");
+      res.status(404).send({
+        success: false,
+        message: "Complain not found",
+        error: {
+          message
+        }
+      });
     }
 
-    res.send({
-      message: "Complaint deleted successfully"
+    res.status(200).send({
+      success: true,
+      message: "Complaint deleted successfully",
+      data: {
+        message: "Complaint deleted successfully"
+      }
     });
   } catch (err) {
     res.status(500).send({
-      message: "Error deleting complaint"
+      success: false,
+      message: "Error deleting complaint",
+      error: err
     });
   }
 };
@@ -89,13 +120,21 @@ exports.newComplaint = async (req, res) => {
 
   if (!message) {
     return res.status(404).send({
-      message: "Message field canot be empty"
+      success: false,
+      message: "Message field canot be empty",
+      error: {
+        message: "Message field canot be empty"
+      }
     });
   }
 
   if (!store) {
     return res.status(404).send({
-      message: "Store reference ID is required"
+      success: false,
+      message: "Store reference ID is required",
+      error: {
+        message: "Store reference ID is required"
+      }
     });
   }
 
@@ -112,12 +151,16 @@ exports.newComplaint = async (req, res) => {
     let result = await complaint.save();
 
     res.status(200).json({
+      success: true,
+      message: 'New complain addedd',
       data: result
     });
 
   } catch (err) {
     res.status(500).send({
-      message: err
+      success: false,
+      message: 'Unable to add new complain',
+      error: err
     });
   }
 };
