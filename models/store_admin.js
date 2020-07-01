@@ -13,7 +13,8 @@ const storeAdminSchema = new mongoose.Schema({
 	  email: { type: String, default: "Not set"}, 
 	  is_active: { type: Boolean, default: 0 },
 	  password: { type: String },
-	  api_token: { type: String, required: true }
+	  api_token: { type: String, required: true },
+	  user_role: { type: String, default: "store_admin" }
 	},
 	google:{
 		googleId: { type: String },

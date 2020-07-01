@@ -11,7 +11,7 @@ exports.validate = (method) => {
       case 'login': {
           return [
               body('phone_number').isInt(),
-              body('password').matches(/^[0-9a-zA-Z]{6,}$/, "i"),
+              body('password'),
           ]
       }
   }
@@ -56,28 +56,45 @@ module.exports.loginUser = async (req, res, next) => {
                 },
               });
             } else {
-              res.json({
+              res.status(401).json({
+                success: false,
                 message: "Invalid Password.",
-                status: false,
+                error: {
+                  code: 401,
+                  description: "Invalid Password"
+                }
               });
             }
           })
           .catch((error) => {
             res.status(500).json({
-              Error: error,
-              status: "fail"
+              success: false,
+              message: "Invalid Password.",
+              error: {
+                code: 500,
+                description: "Invalid Password."
+              }
             });
           });
       } else {
-        res.json({
-          Message: "Invalid phone number.",
-          Status: false,
+        res.status(401).json({
+          success: false,
+          message: "Invalid phone number.",
+          error: {
+            code: 401,
+            description: "Invalid phone number."
+          }
         });
       }
     })
     .catch((error) => {
       res.status(500).json({
-        Error: error,
+        success: false,
+        message: "An internal error occurred",
+        error: {
+          statusCode: 500,
+          description: error
+        }
       });
     });
 };
@@ -98,7 +115,12 @@ module.exports.loginCustomer = async (req, res, next) => {
   //  Check if there is any validation error.
   if (error) {
     return res.status(400).json({
-      Error: error.details[0].message,
+      success: false,
+      message: "An internal error occurred",
+      error: { 
+        statusCode: 400,
+        description: error.details[0].message,
+      }
     });
   }
 
@@ -158,7 +180,7 @@ module.exports.fbLoginCallback = function (req, res) {
       message: "Login with facebook failed",
       error: {
         code: 401,
-        message: "Login failed"
+        description: "Login failed"
       }
     });
   } else {

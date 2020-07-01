@@ -10,7 +10,9 @@ exports.validate = (method) => {
       case 'body': {
           return [
               body('phone_number').isInt(),
-              body('password').matches(/^[0-9a-zA-Z]{6,}$/, "i"),
+              body('password').isLength({
+                  min: 6
+              }),
           ]
       }
   }
@@ -45,8 +47,13 @@ module.exports.registerUser = async (req, res, next) => {
         .then((existingUser) => {
             if(existingUser) {
                 //  This means the user exists.
-                return res.status(200).json({
-                    Message: "Phone number already taken. Please use another phone number."
+                return res.status(409).json({
+                    success: false,
+                    Message: "User already exists",
+                    error: {
+                        statusCode: 409,
+                        description: "Phone number already taken, please use another phone number"
+                    }
                 });
             }
             else {
@@ -66,15 +73,24 @@ module.exports.registerUser = async (req, res, next) => {
                     })
                     .catch((error) => {
                         return res.status(500).json({
-                            Error: error,
-                            status: "fail"
+                            success: false,
+                            message: "Internal error",
+                            error: {
+                                statusCode: 500,
+                                description: error
+                            }
                         });
                     });
             }
         })
         .catch((error) => {
             res.status(500).json({
-                Error: error,
+                success: false,
+                message:"Internal error",
+                error: {
+                    statusCode: 500,
+                    description: error
+                }
             });
         });
 };
@@ -94,7 +110,12 @@ module.exports.registerCustomer = async (req, res, next) => {
     //  Check if there is any validation error.
     if (error) {
         return res.status(400).json({
-            Error: error.details[0].message,
+            success: false,
+            message: "Bad request",
+            error:{ 
+                statusCode: 400,
+                description:error.details[0].message
+            }
         });
     }
 

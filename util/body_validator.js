@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
         message: "Request is not valid",
         error: {
             code: 400,
-            message: extractedErrors[0].message
+            description: extractedErrors[0].message
         }
     }
 
