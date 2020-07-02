@@ -3,10 +3,10 @@ const axios=require('axios')
 require("dotenv").config();
 const { MONGOLAB_URI, API_PORT } = process.env;
 
-describe('Customer endpoints', () => {
+describe('Store endpoints', () => {
   let api_token;
   let user_id;
-  let customer_id;
+  let store_id;
 
   /*beforeAll(async () => {
     await mongoose.connect(MONGOLAB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -63,34 +63,63 @@ describe('Customer endpoints', () => {
     done()
   });
 
-  /*test('customer new', async done => {
-    let res = await axios.post(`http://localhost:${API_PORT}/customer/new/${user_id}`, {
-      "name": "namet",
-      "phone": "888888"
-    }, {
+  test('store new', async done => {
+    let res = await axios.post(`http://localhost:${API_PORT}/store/new/${user_id}`, {
+      "shop_address": "test",
+      "store_name": "test"
+  }, {
       headers: {"x-access-token": api_token}
     });
 
     expect(res.data).toEqual(
       expect.objectContaining({
-        status: true,
-        message: "Customer was created",
+        success: true,
+        message: "Store added successfully",
         data: {
           statusCode: 201,
-          customer: {
-            "__v": 0,
-            "_id": expect.any(String),
-            "createdAt": expect.any(String),
-            "email": "Not set",
-            "name": "namet",
-            "phone_number": 888888,
-            "updatedAt": expect.any(String)
+          store: {
+            _id: expect.any(String),
+            email: "Not set",
+            store_name: "test",
+            shop_address: "test",
+            store_admin: user_id,
+            __v: 0
           }
+        }
+    }),
+    );
+
+    store_id = res.data.data.store._id
+
+    done()
+  });
+
+  /*test('customer all', async done => {
+    let res = await axios.get(`http://localhost:${API_PORT}/customer/all`, {
+      headers: {"x-access-token": api_token}
+    })
+
+    expect(res.data).toEqual(
+      expect.objectContaining({
+        status: true,
+        message: "Customers",
+        data: {
+          customers: expect.any(Array)
         }
       }),
     );
 
-    customer_id = res.data.data.customer._id
+    res.data.data.customers.forEach(element => {
+      expect(element).toEqual(
+        expect.objectContaining({
+          _id: expect.any(String),
+          name: expect.any(String),
+          phone_number: expect.any(Number),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String)
+        })
+      )
+    });
 
     done()
   });
@@ -164,36 +193,6 @@ describe('Customer endpoints', () => {
         },
       }),
     );
-
-    done()
-  });
-
-  test('customer all', async done => {
-    let res = await axios.get(`http://localhost:${API_PORT}/customer/all`, {
-      headers: {"x-access-token": api_token}
-    })
-
-    expect(res.data).toEqual(
-      expect.objectContaining({
-        status: true,
-        message: "Customers",
-        data: {
-          customers: expect.any(Array)
-        }
-      }),
-    );
-
-    res.data.data.customers.forEach(element => {
-      expect(element).toEqual(
-        expect.objectContaining({
-          _id: expect.any(String),
-          name: expect.any(String),
-          phone_number: expect.any(Number),
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String)
-        })
-      )
-    });
 
     done()
   });*/

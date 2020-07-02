@@ -34,7 +34,7 @@ module.exports.registerUser = async (req, res, next) => {
     const user = await new UserModel({});
     user.local.phone_number = phone_number;
     user.local.password = password;
-    user.local.api_token = token;
+    user.api_token = token;
     user.identifier = phone_number
     //  Encrypt the Password
    user.local.password = await bCrypt.hash(user.local.password, 10);

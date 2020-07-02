@@ -3,7 +3,7 @@ const mongoose = require("mongoose"),
 
 
 const customerSchema = new mongoose.Schema({
-	name: { type: String, required: true },
+	name: { type: Number, required: true },
 	phone_number: { type: String, default: "Not set" },
 	email: { type: String, default: "Not set" },
 	transactions: [

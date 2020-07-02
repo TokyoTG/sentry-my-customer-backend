@@ -41,7 +41,8 @@ describe('Authentication endpoints', () => {
               is_active: expect.any(Boolean),
               last_name: expect.any(String),
               password: expect.any(String),
-              phone_number: 1
+              phone_number: 1,
+              user_role: expect.any(String)
             },
             stores: expect.any(Array)
           }
@@ -66,6 +67,7 @@ describe('Authentication endpoints', () => {
         success: true,
         message: "You're logged in successfully.",
         data: {
+          api_token: expect.any(String),
           statusCode: 200,
           user: {
             __v: 0,
@@ -81,7 +83,8 @@ describe('Authentication endpoints', () => {
               is_active: expect.any(Boolean),
               last_name: expect.any(String),
               password: expect.any(String),
-              phone_number: 1
+              phone_number: 1,
+              user_role: expect.any(String)
             },
             stores: expect.any(Array)
           }
@@ -120,7 +123,8 @@ describe('Authentication endpoints', () => {
               is_active: expect.any(Boolean),
               last_name: expect.any(String),
               password: expect.any(String),
-              phone_number: 1
+              phone_number: 1,
+              user_role: expect.any(String)
             },
             stores: expect.any(Array)
           }
