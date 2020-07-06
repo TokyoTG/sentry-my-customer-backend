@@ -2,11 +2,12 @@ const Response = require("../util/response_manager");
 const HttpStatus = require("../util/http_status");
 const Transaction = require("../models/transaction");
 const CustomerModel = require("../models/customer");
-const UserModel = require("../models/user");
+const UserModel = require("../models/store_admin");
 const StoreModel = require("../models/store");
 
 // Create and Save a new Transaction
-exports.create = async(req, res, next) => {
+exports.create = async (req, res, next) => {
+
   try {
     let {
       amount,
@@ -15,8 +16,7 @@ exports.create = async(req, res, next) => {
       description,
       phone_number,
       store_name,
-      transaction_name,
-      transaction_role,
+      type
     } = req.body;
 
     let req_keys = [
@@ -26,9 +26,12 @@ exports.create = async(req, res, next) => {
       description,
       phone_number,
       store_name,
-      transaction_name,
-      transaction_role,
+      type
     ];
+
+    let customer_ref_id = phone_number
+    let store_ref_id = store_name
+    let user_ref_id;
 
     //checks if any of the above fields is empty
     for (var k in req_keys) {
@@ -38,9 +41,8 @@ exports.create = async(req, res, next) => {
     }
 
     // gets user_ref_id
-    const email = req.user.email;
-    var user_ref_id;
-    await UserModel.findOne({ email })
+    const phone = req.user.phone_number;
+    await UserModel.findOne({ identifier: phone })
       .then((user) => {
         user_ref_id = user._id;
       })
@@ -51,54 +53,55 @@ exports.create = async(req, res, next) => {
         });
       });
 
-    // gets customer_ref_id
-    var customer_ref_id;
-    await CustomerModel.findOne({ phone_number })
-      .then((data) => {
-        customer_ref_id = data._id;
-      })
-      .catch((err) => {
-        res.status(404).json({
-          message: "invalid phone number",
-          error: err,
-        });
-      });
-    // gets store_ref_id
-    var store_ref_id;
-    await StoreModel.findOne({ store_name })
-      .then((data) => {
-        store_ref_id = data._id;
-      })
-      .catch((err) => {
-        res.status(404).json({
-          message: "Store not found",
-        });
-      });
+    // // gets customer_ref_id
+    // await CustomerModel.findOne({ phone_number })
+    //   .then((data) => {
+    //     customer_ref_id = data._id;
+    //   })
+    //   .catch((err) => {
+    //     res.status(404).json({
+    //       message: "invalid phone number",
+    //       error: err,
+    //     });
+    //   });
+
+
+    // // gets store_ref_id
+    // await StoreModel.findOne({ store_name })
+    //   .then((data) => {
+    //     store_ref_id = data._id;
+    //   })
+    //   .catch((err) => {
+    //     res.status(404).json({
+    //       message: "Store not found",
+    //     });
+    //   });
+    
+
     setTimeout(() => {
-      const transaction = new Transaction({
-        amount,
-        interest,
-        total_amount,
-        description,
-        user_ref_id,
-        customer_ref_id,
-        store_ref_id,
-        transaction_name,
-        transaction_role,
-      })
-        .save()
-        .then((result) => {
-          res.status(200).json({
-            status: "success",
-            result,
-          });
-        })
-        .catch((err) => {
-          res.status(409).json({
-            error:
-              "Error creating transaction details with the same transaction name or role as previously saved data",
-          });
+    const transaction = new Transaction({
+      amount,
+      interest,
+      total_amount,
+      description,
+      user_ref_id,
+      customer_ref_id,
+      store_ref_id,
+      type
+    })
+
+    transaction.save().then((result) => {
+      res.status(200).json({
+        status: "success",
+        result,
+      });
+    })
+      .catch((err) => {
+        res.status(409).json({
+          error:
+            "Error creating transaction details with the same transaction name or role as previously saved data",
         });
+      });
     }, 1500);
   } catch (error) {
     res.status(500).json({

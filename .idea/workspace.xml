@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="226f30c2-19fd-4c3c-8328-92b07606ae6e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/util/joi_validator.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/login_controler.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/login_controler.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/register_controler.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/register_controler.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/joi_validator.js" beforeDir="false" afterPath="$PROJECT_DIR$/util/joi_validator.js" afterDir="false" />
     </list>
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
@@ -55,7 +54,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../WebProjects/React Projects/e-commerce-project-react" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
@@ -123,6 +122,10 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="1223" y="277" width="424" height="479" key="FileChooserDialogImpl" timestamp="1593198801717">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="1223" y="277" width="424" height="479" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1593198801717" />
     <state width="1172" height="268" key="GridCell.Tab.0.bottom" timestamp="1593045364015">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

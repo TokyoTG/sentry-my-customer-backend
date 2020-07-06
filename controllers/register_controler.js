@@ -10,9 +10,7 @@ exports.validate = (method) => {
       case 'body': {
           return [
               body('phone_number').isInt(),
-              body('password').isLength({
-                  min: 6
-              }),
+              body('password').isLength({min: 6}),
           ]
       }
   }
@@ -37,7 +35,7 @@ module.exports.registerUser = async (req, res, next) => {
     user.api_token = token;
     user.identifier = phone_number
     //  Encrypt the Password
-   user.local.password = await bCrypt.hash(user.local.password, 10);
+    user.local.password = await bCrypt.hash(user.local.password, 10);
 
 
     //  Check if User PhoneNumber and Email already exist.
@@ -68,8 +66,6 @@ module.exports.registerUser = async (req, res, next) => {
                                 user: result
                             }
                         });
-
-                        //  TODO Redirect to the OTP Activation Page.
                     })
                     .catch((error) => {
                         return res.status(500).json({

@@ -2,7 +2,6 @@ const Store = require("./../models/store");
 const UserModel = require("../models/store_admin");
 
 exports.createStore = async (req, res, next) => {
-  console.log("here")
   if (
     req.body.store_name === "" || req.body.shop_address === "") {
     return res.status(500).json({
@@ -11,9 +10,8 @@ exports.createStore = async (req, res, next) => {
     });
   }
   try {
-    const id = req.params.current_user;
-    console.log(id)
-    const storeOwner = await UserModel.findById(id);
+    const id = req.user.phone_number;
+    const storeOwner = await UserModel.findOne({identifier: id});
     if (storeOwner) {
      storeOwner.stores.push({
        store_name: req.body.store_name,
@@ -45,9 +43,9 @@ exports.createStore = async (req, res, next) => {
 
 exports.getAllStores = async (req, res, next) => {
   //current user's id to find user
-  const id = req.params.current_user;
+  const id = req.user.phone_number;
   try {
-    const store_admin = await UserModel.findById(id)
+    const store_admin = await UserModel.findOne({ identifier: id })
     if (!store_admin) {
       return res.status(404).json({
         status: "fail",

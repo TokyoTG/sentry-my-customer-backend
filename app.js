@@ -10,15 +10,15 @@ var cors = require("cors");
 const documentation = require("./routes/documentation");
 // const google = require("./routes/google");
 const customer = require("./routes/customer");
-// const phone_verification = require("./routes/verify-phone-number");
+const phone_verification = require("./routes/verify-phone-number");
 // const example = require("./routes/example");
-// const messagingAPI = require("./routes/messaging");
+const messagingAPI = require("./routes/messaging");
 const mongoose = require("mongoose");
-// const transactions = require("./routes/transaction");
+const transactions = require("./routes/transaction");
 const store = require("./routes/stores.js");
 const register = require("./routes/register_route");
 const login = require("./routes/login_route");
-// const emailAPI = require("./routes/sendMail");
+const emailAPI = require("./routes/sendMail");
 // const complainRouter = require("./routes/complaint");
 const docs = require("./routes/docs");
 const user = require("./routes/user");
@@ -37,7 +37,8 @@ mongoose
   .connect(MONGOLAB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false,
   })
   .then(() => {
     console.log("Successfully connected to the database");
@@ -61,10 +62,10 @@ app.get("/", (req, res) => {
 
 app.use(documentation);
 app.use(customer);
-// app.use(phone_verification);
-// app.use(messagingAPI);
-// app.use(emailAPI);
-// app.use(transactions);
+app.use(phone_verification);
+app.use(messagingAPI);
+app.use(emailAPI);
+app.use(transactions);
 // app.use(businessCards);
 app.use(store);
 // app.use(complainRouter);
@@ -75,6 +76,7 @@ app.use("/register", register);
 
 // CONFIGURE FACEBOOK SIGNIN
 app.use(passport.initialize());
+
 passport.use(new Strategy({
   clientID: FB_CLIENT_ID,
   clientSecret: FB_CLIENT_SECRET,
@@ -117,5 +119,5 @@ app.use("*", (req, res) => {
 
 const port = process.env.PORT || API_PORT;
 app.listen(port, () => {
-  console.log(`app running on port:`+ port);
+  console.log(`app running on port:`+ port)
 });

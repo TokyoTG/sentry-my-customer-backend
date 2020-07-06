@@ -1,181 +1,255 @@
 const UserModel = require("../models/store_admin");
+const StoreModel = require('../models/store');
 const { body } = require('express-validator/check');
+const Customer = require('../models/customer');
 
 exports.validate = (method) => {
-    switch (method) {
-        case 'body': {
-            return [
-                body('name').isLength({ min: 3 }),
-            ]
-        }
+  switch (method) {
+    case 'body': {
+      return [
+        body('name').isLength({ min: 3 }),
+      ]
     }
+  }
 }
 
 exports.create = async (req, res) => {
-  
-  const id = req.params.current_user
-  console.log(id)
-  //get current user's id and add a new customer to it
-  UserModel.findById(id).catch(err =>{
-    res.send(err)
-  }).then(user =>{
-    console.log(user)
-    if(user.stores == [] || user.stores.length == 0){
-      res.status(403).json({
-        message: "please add a store before adding customers"
-      })
-    }
-  })
+  const identifier = req.user.phone_number;
 
-  // res.status(201).json({
-  //   status: true,
-  //   message: "Customer was created",
-  //   data: {
-  //     statusCode: 201,
-  //     customer: user
-  //   },
-  // });
+  const { phone_number, email, name, store_name } = req.body;
+
+  //get current user's id and add a new customer to it
+  try {
+    UserModel.findOne({ identifier })
+      .then((user) => {
+        if (user.stores.length == 0) {
+          return res.status(403).json({
+            message: "please add a store before adding customers",
+          });
+        }
+        let store_name = req.body.store_name || req.params.store_name;
+        let wantedStore = user.stores.find(
+          (store) => store.store_name === store_name
+        ); // find the necessary store form user.stores
+
+        let customerToReg = { phone_number, email, name }; // customer to register
+        let customerExists = wantedStore.customers.find(
+          (customer) => customer.phone_number == customerToReg.phone_number
+        ); //truthy if customer is registered
+        // return res.send(wantedStore);
+
+        if (!customerExists) {
+          // if customer isn't registered
+          wantedStore.customers.push(customerToReg); //push to user.stores
+          // return res.status(200).json({ wantedStore });
+        } else {
+          return res.status(409).json({
+            sucess: false,
+            message: "Customer already registered",
+            data: {
+              statusCode: 409,
+            },
+          });
+        }
+
+        user
+          .save()
+          .then((result) => {
+            res.status(201).json({
+              success: true,
+              message: "Customer registration successful",
+              data: {
+                statusCode: 201,
+                customer: customerToReg,
+              },
+            });
+          })
+          .catch((err) => {
+            return res.status(500).json({
+              success: false,
+              message: "Error saving to database",
+              data: {
+                statusCode: 500,
+                err,
+              },
+            });
+          });
+      })
+      .catch((err) => {
+        return res.status(404).json({
+          success: false,
+          error: {
+            statusCode: 404,
+            error: "No customer found for current user",
+          },
+        });
+      });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong while adding customer.",
+      data: {
+        statusCode: 500,
+        error: err,
+      },
+    });
+  }
 };
 
 exports.getById = (req, res) => {
-  try {
-    Customer.findById(req.params.customerId, (error, customer) => {
-      if (error) {
-        res.status(404).send({
-          status: false,
-          message: error.message,
-          error: {
-            code: 404,
-            message: error.message
-          }
-        });
-      } else {
-        res.status(200).json({
-          status: true,
-          message: "Customer was found",
-          data: {
-            customer
-          }
-        });
-      }
+  const identifier = req.user.phone_number;
+  let customers;
+  UserModel.findOne({ identifier })
+    .then((user) => {
+      let stores = user.stores;
+      stores.forEach((store) => {
+        customers = store.customers;
+        if (customers.length > 0) {
+          customers.forEach((customer) => {
+            if (customer._id == req.params.customerId) {
+              return res.status(200).json({
+                success: true,
+                message: "successful",
+                data: {
+                  customer,
+                },
+              });
+            }
+          });
+        }
+      });
+      return res.status(404).json({
+        status: false,
+        message: "Customer not found",
+        error: {
+          code: 404,
+          message: "customer not found",
+        },
+      });
+    })
+    .catch((err) => {
+      return res.status(404).json({
+        status: false,
+        message: "Customer not found",
+        error: {
+          code: 404,
+          message: "customer not found",
+        },
+      });
     });
-  } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-      error: {
-        code: 500,
-        message: error.message
-      }
-    });
-  }
 };
 
 exports.updateById = (req, res) => {
-  Customer.updateOne({ _id: req.params.customerId }, { $set: {
-    name: req.body.name,
-    phone_number: req.body.phone,
-  }})
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        status: true,
-        message: "Customer was updated",
-        data: {
-          customer: {
-            id: req.params.customerId,
-            name: req.body.name,
-            phone: req.body.phone,
+  const customerID = req.params.customerId;
+  const reqBody = req.body;
+  console.log(customerID);
+  console.log(reqBody);
+  Customer.findOneAndUpdate(customerID, reqBody)
+      .then((customer) => {
+        res.status(200).json({
+          status: true,
+          message: "Customer was updated",
+          data: {
+            customer: {
+              _id: customer._id,
+              name: customer.name,
+              email: customer.email,
+              phone_number: customer.phone_number,
+            },
           }
-        }
+        })
+      })
+      .catch((error) => {
+        res.status(500).json({
+          status: false,
+          message: error.message,
+          error: {
+            code: 500,
+            message: error.message
+          }
+        });
       });
-    })
-    .catch((error) => {
-      res.status(500).json({
-        status: false,
-        message: error.message,
-        error: {
-          code: 500,
-          message: error.message
-        }
-      });
-    });
 };
 
 exports.deleteById = (req, res) => {
-  try {
-    Customer.findByIdAndDelete(req.params.customerId, (error, customer) => {
-      if (error) {
-        res.status(404).json({
-          status: false,
-          //message: error.message,
-        });
-      } else if (!customer) {
-        res.status(404).json({
-          status: false,
-          message: "Customer not found",
-          error: {
-            code: 404,
-            message: "Customer not found"
-          }
-        });
-      } else {
-        res.status(200).json({
-          status: true,
-          message: "Customer was deleted",
-          data: {
-            customer: {
-              id: customer._id,
-              name: customer.name,
-              phone: customer.phone_number,
+  const identifier = req.user.phone_number;
+  let customers;
+  UserModel.findOne({ identifier })
+    .then((user) => {
+      let stores = user.stores;
+      stores.forEach((store) => {
+        customers = store.customers;
+        if (customers.length > 0) {
+          customers.forEach((customer, index) => {
+            if (customer._id == req.params.customerId) {
+              customers.splice(index, 1);
             }
-          },
+          });
+        }
+      });
+      user
+        .save()
+        .then((result) => {
+          res.status(200).json({
+            success: true,
+            message: "Customer deleted successful",
+            data: {
+              statusCode: 200,
+            },
+          });
+        })
+        .catch((err) => {
+          return res.status(500).json({
+            success: false,
+            message: "Error deleting customer",
+            data: {
+              statusCode: 500,
+              err,
+            },
+          });
         });
-      }
+    })
+    .catch((err) => {
+      return res.status(404).json({
+        status: false,
+        message: "Customer not found",
+        error: {
+          code: 404,
+          message: "customer not found",
+        },
+      });
     });
-  } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-      error: {
-        code: 500,
-        message: error.message
-      }
-    });
-  }
 };
 
 exports.getAll = async (req, res) => {
-  try {
-    let customers = await Customer.find().select("-__v").sort({
-      createdAt: -1,
-    });
-    if (!customers) {
-      res.status(404).json({
-        status: false,
-        message: "Customers not found",
+  const identifier = req.user.phone_number;
+  UserModel.findOne({ identifier })
+    .then((user) => {
+      let store = user.stores;
+      let customer = [];
+
+      store.forEach((store) => {
+        console.log(store);
+        let obj = {};
+        obj.storeName = store.store_name;
+        obj.customers = store.customers;
+
+        customer.push(obj);
+      });
+      return res.status(200).json({
+        success: true,
+        message: "Operation successful",
+        data: customer,
+      });
+    })
+    .catch((err) => {
+      return res.status(404).json({
+        success: false,
+        message: "No customer associated with this user account",
         error: {
           code: 404,
-          message: "Customers not found"
-        }
+          message: "No customer associated with this user account",
+        },
       });
-    }
-
-    res.status(200).json({
-      status: true,
-      message: "Customers",
-      data: {
-        customers: customers
-      }
     });
-  } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: error.message,
-      error: {
-        code: 500,
-        message: error.message
-      }
-    });
-  }
 };

@@ -22,11 +22,11 @@
                 <li class="item"><a href="#auth">Authentication</a></li>
                 <li class="item"><a href="#notification">Notification</a></li>
                 <li class="item"><a href="#transaction">Transaction</a></li>
-                <li class="item"><a href="#user">User</a></li>
+                <li class="item"><a href="#user">Store Assistant</a></li>
                 <li class="item"><a href="#customer">Customer</a></li>
                 <li class="item"><a href="#complaint">Complaint</a></li>
                 <li class="item"><a href="#store">Store</a></li>
-                <li class="item"><a href="#call">Call</a></li>
+                <!-- <li class="item"><a href="#call">Call</a></li> -->
                 <li class="toggle"><a href="#"><i class="fas fa-bars"></i></a></li>
             </ul>
     </div>
@@ -103,38 +103,35 @@
             </ul>
         </div>
         <div class="user" id="user">
-            <h1 class="">User</h1>
+            <h1 class="">Store Assistant <small>( Previously <strong>user</strong> )</small></h1>
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Create user<strong>- /user/new [POST]</strong>
-                    <h6>Bosy: </h6>
+                <li>Create assistant<strong>- /assistant/new [POST]</strong>
+                    <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>phone_number</li>
-                        <li>first_name</li>
-                        <li>last_name</li>
-                        <li>email</li>
-                        <li>password</li>
+                        <li>name</li>
                     </ul>
                 </li>
-                <li>Retrieve all users<strong>- /user/all [GET]</strong></li>
-                <li>Retrieve user<strong> - /user/:user_id [GET]</strong>
+                <li>Retrieve all users<strong>- /assistant [GET]</strong></li>
+                <li>Retrieve user<strong> - /assistant/:assistant_id [GET]</strong>
                     <h6>Params</h6>
                     <ul class="alert alert-primary">
                         <li>customer_id</li>
                     </ul>
                 </li>
-                <li>Update user<strong>- /user/update/:user_id</strong>
+                <li>Update assistant<strong>- /assistant/update/:user_id</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
-                        <li>user_id</li>
+                        <li>assistant_id</li>
                     </ul>
                     <h6>Body</h6>
                     <ul class="alert alert-primary">
                         <li>content[data]</li>
                     </ul>
                 </li>
-                <li>Delete user (logical delete)<strong>- /user/delete/:user_id</strong></li>
+                <li>Delete assistant (logical delete)<strong>- /assistant/delete/:user_id</strong></li>
             </ul>
         </div>
         <div>
@@ -142,7 +139,7 @@
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Create store<strong> - /store/new/:current_user [POST]</strong>
+                <li>Create store<strong> - /store/new [POST]</strong>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>store_name</li>
@@ -158,16 +155,18 @@
                 <li>Update store<strong> - /store/update/:store_id [PUT]</strong>
                 <h6>Params</h6>
                 <ul class="alert alert-primary">
-                    <li>Update locations</li>
+                    <li>shop_address</li>
+                    <li>store_name</li>
+                    <li>current_user</li>
                 </ul>
                 </li>
                 <li>Delete store<strong> - /store/delete/:store_id [DELETE]</strong>
                     <h6>Params</h6>
                     <ul class="alert alert-primary">
-                        <li>store_id</li>
+                        <li>current_user</li>
                     </ul>
                 </li>
-                <li>View all user's stores<strong> - /store/all/:current_user [GET]</strong>
+                <li>View all user's stores<strong> - /store [GET]</strong>
                 </li>
             </ul>
         </div>
@@ -210,7 +209,7 @@
                         <li>total_amount</li>
                         <li>description</li>
                         <li>transaction_name</li>
-                        <li>transaction_role</li>
+                        <li>type</li>
                         <li>store_name</li>
                         <li>phone_number</li>
                     </ul>
@@ -249,6 +248,7 @@
                     <ul class="alert alert-primary">
                         <li>name</li>
                         <li>phone_number</li>
+                        <li>store_name</li>
                     </ul>
                 </li>
                 <li>Retrieve customer<strong> - /customer/:customer_id [POST]</strong>
@@ -300,11 +300,12 @@
                     <ul class="alert alert-primary">
                         <li>subject</li>
                         <li>text</li>
+                        <li>store_id</li>
                     </ul>
                 </li>
             </ul>
         </div>
-        <div class="call" id="call">
+        <!-- <div class="call" id="call">
             <h1 class="">Call</h1>
             <hr>
             <h4>Endpoint</h4>
@@ -317,7 +318,7 @@
                     </ul>
                 </li>
             </ul>
-        </div>
+        </div> -->
     </div>
     <a href="#top" id="controller">
         <div class="controller text-center" style="color: #fff">↑</div>
