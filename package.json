@@ -21,6 +21,7 @@
     "yamljs": "^0.3.0"
   },
   "dependencies": {
+    "africastalking": "^0.4.7",
     "axios": "^0.19.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "1.18.3",
@@ -32,11 +33,9 @@
     "express-validator": "5.3.0",
     "googleapis": "^52.1.0",
     "jsonwebtoken": "^8.5.1",
-    "messagebird": "^3.5.0",
     "mongoose": "5.7.5",
     "nodemailer": "^4.6.8",
     "passport": "^0.4.1",
-    "passport-facebook": "^3.0.0",
-    "twilio": "^3.46.0"
+    "passport-facebook": "^3.0.0"
   }
 }

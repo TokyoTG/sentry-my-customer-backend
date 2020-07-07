@@ -1,6 +1,7 @@
 const mongoose = require("mongoose"),
   Store = require("./store"),
-  StoreAssistant = require("./storeAssistant");
+  StoreAssistant = require("./storeAssistant"),
+  Complaints = require("./complaint_form");
 
 const storeAdminSchema = new mongoose.Schema({
   identifier: { type: String, required: true, unique: true },
@@ -28,6 +29,7 @@ const storeAdminSchema = new mongoose.Schema({
   },
   assistants: [StoreAssistant.schema],
   stores: [Store.schema],
+  complaints: [Complaints.schema], // To take in Complaints and save to DB
   api_token: {
     type: String,
   },

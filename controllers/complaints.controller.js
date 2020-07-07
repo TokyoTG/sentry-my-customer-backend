@@ -1,166 +1,221 @@
 const Complaint = require("../models/complaint_form");
-const User = require("../models/user");
+// const User = require("../models/user");
 
-// Retieves all complaints
+const StoreOwner = require('../models/store_admin');
+const { check, validationResult } = require('express-validator/check');
+
+// @route       GET /complaints/:ownerId
+// @desc        Store admin retrieves all Complaints
+// @access      Private
 exports.findAll = async (req, res) => {
+  
+  // Finds all complaints pertaining to store owner
   try {
-    await Complaint.find()
-      .sort({ createdAt: -1 })
-      .then(async complaints => {
-        const finalResponse = [];
-        for (const iterator of complaints) {
-          const item = iterator.toJSON();
-          if (item.user_ref_id) {
-            const user = await User.findById(item.user_ref_id);
-            item.customer_first_name = user.first_name ? user.first_name : '';
-            item.customer_last_name = user.last_name ? user.last_name : '';
-            item.customer_email = user.email? user.email : '';
-          }
-          finalResponse.push(item);
-        }
-        res.status(200).send({
-          status: true,
-          message: 'Complains loaded',
-          data: finalResponse
-        });
-      });
-  } catch (err) {
-    res.status(500).send({
-      status: false,
-      message: "Error occured while retriving complaints",
-      data: {
-        message: "Error occured while retriving complaints"
-      }
-    });
-  }
-};
 
-// update complaint
-exports.update = async (req, res) => {
-  // validating the message
-  if (!req.body.message || "") {
-    return res.status(404).send({
-      status: false,
-      message: "Message field canot be empty",
-      data: {
-        message: "Message field canot be empty"
-      }
-    });
-  }
-
-  try {
-    // update complaint
-    let complaint = await Complaint.findByIdAndUpdate(req.params.id, {
-      message: req.body.message,
-      status: req.body.status
-    });
-
-    if (!complaint) {
-      res.status(404).send({
-        status: false,
-        message: "Complaint not found",
-        data: {
-          message: "Complaint not found"
-        }
-      });
-    }
+    const store_admin_id = req.params.ownerId;
+  
+    const storeAdmin = await StoreOwner.findById(store_admin_id);
 
     res.status(200).send({
       success: true,
-      message: "Complaint successfully updated",
+      message: "All complaints",
       data: {
-        message: "Complaint successfully updated"
+        statusCode: 200,
+        complaints: storeAdmin.complaints
       }
     });
-  } catch (err) {
-    res.status(500).send({
-      status: false,
-      message: "Error updating compliant",
-      data: err
-    });
-  }
-};
-
-// delete a complaint
-exports.deleteOne = async (req, res) => {
-  try {
-    let complaint = await Complaint.findByIdAndRemove(req.params.id);
-
-    if (!complaint) {
-      res.status(404).send({
-        success: false,
-        message: "Complain not found",
-        error: {
-          message
-        }
-      });
-    }
-
-    res.status(200).send({
-      success: true,
-      message: "Complaint deleted successfully",
-      data: {
-        message: "Complaint deleted successfully"
-      }
-    });
-  } catch (err) {
+    
+  } catch (error) {
     res.status(500).send({
       success: false,
-      message: "Error deleting complaint",
-      error: err
+      message: "Error fetching complaints",
+      data: {
+        statusCode: 422,
+        error: error.message
+      }
+    });
+  }
+};
+
+// @route       GET /complaint/:ownerId
+// @desc        Retrieve a single complaint
+// @access      Private
+exports.findOne = async (req, res) => {
+
+  try {
+    const complaint_id = req.body.complaint_id;
+    const store_admin_id = req.params.ownerId;
+
+    const storeAdmin = await StoreOwner.findById(store_admin_id);
+
+    const complaint = storeAdmin.complaints.id(complaint_id);
+
+    if (!complaint) {
+      res.status(422).send({
+        success: false,
+        message: "Error fetching complaint",
+        data: {
+          statusCode: 422,
+          error: error.message
+        }
+      });
+    }
+
+    res.status(200).send({
+      success: true,
+      message: "Complaint fetched",
+      data: {
+        statusCode: 200,
+        complaint
+      }
+    });
+    
+  } catch (error) {
+    res.status(422).send({
+      success: false,
+      message: "Error fetching complaint",
+      data: {
+        statusCode: 422,
+        error: error.message
+      }
+    });
+  }
+}
+
+// @route       PUT /complaints/update/:ownerId
+// @desc        Update an existing complaint
+// @access      Public
+exports.update = async (req, res) => {
+  const { complaint_id, name, email, message } = req.body;
+  const store_admin_id = req.params.ownerId;
+
+  try {
+    const storeAdmin = await StoreOwner.findById(store_admin_id);
+
+    const complaints  = storeAdmin.complaints;
+
+    const complaint = complaints.id(complaint_id);
+
+    complaint.name = name ? name : complaint.name;
+    complaint.email = email ? email : complaint.email;
+    complaint.message = message ? message : complaint.message;
+
+    await storeAdmin.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Complaint updated",
+      data: {
+        statusCode: 200,
+        complaint
+      }
+    });
+    
+  } catch (error) {
+    res.status(422).send({
+      success: false,
+      message: "Error updating complaint",
+      data: {
+        statusCode: 422,
+        error: error.message
+      }
     });
   }
 };
 
 // create and register new complaint
+// @route       DELETE /complaint/delete/:ownerId
+// @desc        Delete one complaint
+// @access      Private
+exports.deleteOne = async (req, res) => {
+  
+  try {
+    const complaint_id = req.body.complaint_id;
+    
+    const store_admin_id = req.params.ownerId;
+
+    const storeAdmin = await StoreOwner.findById(store_admin_id);
+
+    const complaints  = storeAdmin.complaints;
+
+    const complaint = complaints.id(complaint_id);
+    
+    complaint.remove();
+
+    await storeAdmin.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Complaint successfully deleted",
+      data: {
+        statusCode: 200, 
+        complaint
+      }
+    });
+
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Error deleting complaint",
+      data: {
+        statusCode: 500,
+        error: error.message
+      }
+    });
+  }
+};
+
+// create and register new complaint
+// @route       POST /complaint/new/:ownerId
+// @desc        Public creates complaints to store Owner admins
+// @access      Public
 exports.newComplaint = async (req, res) => {
-  // validate message field
-  const { message, store } = req.body;
-  const { email } = req.user;
 
-  if (!message) {
-    return res.status(404).send({
-      success: false,
-      message: "Message field canot be empty",
-      error: {
-        message: "Message field canot be empty"
-      }
-    });
+  // Validate body request
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
   }
 
-  if (!store) {
-    return res.status(404).send({
-      success: false,
-      message: "Store reference ID is required",
-      error: {
-        message: "Store reference ID is required"
-      }
-    });
-  }
-
-  const user = await User.findOne({ email });
+  // Deconstruct req body
+  const { name, email, message } = req.body
 
   try {
-    // create new complaint
-    let complaint = await new Complaint({
-      user_ref_id: user._id,
+    // Get Store Owner Id from the URL Parameter
+    let urlStoreOwner = await StoreOwner.findById(req.params.ownerId);
+
+    // If Id exists, create complaint
+    let newComplaint = await Complaint({
+      name, 
+      email,
       message,
-      store_ref_code: store
-    });
+      storeOwner: req.params.ownerId
+    })
 
-    let result = await complaint.save();
+    urlStoreOwner.complaints.push(newComplaint);
 
-    res.status(200).json({
+    const complaint = await urlStoreOwner.save();
+
+    // let comp = null;
+
+    res.json({
       success: true,
-      message: 'New complain addedd',
-      data: result
+      message: "Complaint successfully sent to store owner!",
+      data: {
+        statusCode: 200,
+        complaint: newComplaint
+      }
     });
 
   } catch (err) {
+    console.error(err.message);
     res.status(500).send({
       success: false,
-      message: 'Unable to add new complain',
-      error: err
+      message: "Server Error. Store Owner Id doesn't exist!",
+      data: {
+        statusCode: 500,
+        error: err.message
+      }
     });
   }
 };

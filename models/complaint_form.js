@@ -1,28 +1,31 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const Complaint = new mongoose.Schema({
-  user_ref_id: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'user',
-    required: true
+const ComplaintSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    // Name of Complainer
   },
-  message: { 
-    type: String, 
-    required: true 
+  email: {
+    type: String,
+    required: true,
+    // Email of complainer
   },
-  store_ref_code: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'store',
-    required: true
+  message: {
+    type: String,
+    required: true,
+    // Message the complainer sends 
   },
   status: {
-    type: String, default: "open"
+    type: String,
+    default: 'Open'
+  },
+  date: {
+    type: Date,
+    default: Date.now 
   }
-}, { timestamps: true });
+});
 
-Complaint.set('toJSON', {
-  virtuals: true
-})
 
-module.exports = mongoose.model('complaint', Complaint);
+module.exports = mongoose.model('complaint_form', ComplaintSchema);

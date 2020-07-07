@@ -12,6 +12,14 @@ exports.validate = method => {
         body("name").matches(/^[0-9a-zA-Z]{6,}$/, "i")
       ];
     }
+    case "store_admin": {
+      return [
+        body("phone_number").isInt(),
+        body("first_name").isString(),
+        body("last_name").isString(),
+        body("email").isEmail()
+      ];
+    }
   }
 };
 
@@ -374,3 +382,44 @@ exports.delete = (req, res) => {
     });
 };
 //#endregion
+
+
+exports.updateStoreAdmin = (req, res) => {
+  const identifier = req.user.phone_number;
+  User.findOne({identifier})
+  .then((user) => {
+    user.local.phone_number = req.body.phone_number;
+    user.local.first_name = req.body.first_name;
+    user.local.last_name = req.body.last_name;
+    user.local.email = req.body.email;
+    user.save().then(result => {
+      res.status(200).json({
+        success: true,
+        message: "Store admin updated successfully",
+        data: {
+          store_admin: result
+        }
+      })
+    })
+    .catch((error) => {
+      res.status(500).json({
+        status: false,
+        message: error.message,
+        error: {
+          code: 500,
+          message: error.message
+        }
+      });
+    })
+  })
+  .catch((error) => {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+      error: {
+        code: 500,
+        message: error.message
+      }
+    });
+  })
+}

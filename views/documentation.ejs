@@ -71,21 +71,31 @@
                     <li>phone_number</li>
                     <li>password</li>
                 </ul>
+                 <li>User update<strong> - /store-admin/update</strong></li>
+                <h6>Body: </h6>
+                <ul  class='alert alert-primary'>
+                  <li>first_name</li>
+                    <li>last_name</li>
+                    <li>phone_number</li> 
+                    <li>email</li>
+                </ul>
+                
+
                 <!-- FACEBOOK LOGIN -->
                 <li>Facebook login<strong> - /login/fb_login [GET]</strong></li>
 
                 <ul>
                     <h5 class="mt-2">Account Activation</h5>
                     <p>Also, a user is required to verify his/her phone number after registration in order to activate his/her account.</p>
-                    <li>Send SMS(OTP)<strong> - /auth/verify-phone [POST]</strong></li>
+                    <li>Send SMS(OTP)<strong> - /otp/send [POST]</strong></li>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>phone</li>
                     </ul>
-                    <li>Verify token<strong> - /auth/verify [POST]</strong></li>
+                    <li>Verify OTP<strong> - /otp/verify [POST]</strong></li>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>id (from response in <strong>/auth/verify-phone</strong> )</li>
+                        <li>id (from response in <strong>/otp/verify</strong> )</li>
                         <li>token</li>
                     </ul>
                     <h5 class="mt-2">Account Recovery</h5>
@@ -175,21 +185,59 @@
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Register new complaint<strong>- /complaint/new [POST]</strong>
-                    <h6>Body: </h6>
-                    <ul class="alert alert-primary">
-                        <li>message</li>
-                    </ul>
-                </li>
-                <li>Retrieve all complaints<strong> - /complaint/all [GET]</strong></li>
-                <li>Update complaint<strong> - /complaint/update/:complaint_id [PUT]</strong>
-                    <h6>Body: </h6>
-                    <ul class="alert alert-primary">
-                        <li>message</li>
-                    </ul>
-                </li>
-                <li>Delete a complaint form<strong> - /complaint/delete/:complaint_id [DETETE]</strong>
+                <li>Register new complaint<strong>- /complaint/new/:ownerId [POST]</strong>
                     <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>name</li>
+                        <li>email</li>
+                        <li>message</li>
+                    </ul>
+                </li>
+                <li>Retrieve all complaints<strong> - /complaints/:ownerId [GET]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+                </li>
+
+                <li>Retrieve a single complaint<strong> - /complaint/:ownerId [GET]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>complaint_id</li>
+                    </ul>
+                </li>
+
+                <li>Update complaint<strong> - /complaint/update/:ownerId [PUT]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>complaint_id</li>
+                        <li>name</li>
+                        <li>email</li>
+                        <li>message</li>
+                    </ul>
+                </li>
+                <li>Delete a complaint form<strong> - /complaint/delete/:ownerId [DETETE]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+
+                    <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>complaint_id</li>
                     </ul>
@@ -222,13 +270,13 @@
                     </ul>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li></li>
+                        <li>transaction id </li>
                     </ul>
                 </li>
                 <li>Update transaction<strong> - /transaction/update/:transaction_id</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
-                        <li>transaction_id</li>
+                        <li>store_name</li>
                     </ul>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">

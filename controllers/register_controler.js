@@ -47,7 +47,7 @@ module.exports.registerUser = async (req, res, next) => {
                 //  This means the user exists.
                 return res.status(409).json({
                     success: false,
-                    Message: "User already exists",
+                    message: "User already exists",
                     error: {
                         statusCode: 409,
                         description: "Phone number already taken, please use another phone number"
@@ -128,7 +128,7 @@ module.exports.registerCustomer = async (req, res, next) => {
             if(existingUser) {
                 //  This means the user exists.
                 return res.status(200).json({
-                    Message: "Phone number already taken. Please use another phone number."
+                    message: "Phone number already taken. Please use another phone number."
                 });
             }
             else {
@@ -136,7 +136,7 @@ module.exports.registerCustomer = async (req, res, next) => {
                 customer.save()
                     .then((result) => {
                         return res.status(201).json({
-                            Message: "Customer registered successfully...",
+                            message: "Customer registered successfully...",
                             Customer: {
                                 _id: result._id,
                                 name: result.name,

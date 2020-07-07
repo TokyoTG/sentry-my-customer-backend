@@ -20,4 +20,7 @@
     // Delete a User with user_id
     router.delete('/assistant/delete/:user_id', auth, users.delete);
 
+    // Update User Info with user_id
+    router.put('/store-admin/update', auth, users.validate('store_admin'), bodyValidator, users.updateStoreAdmin);
+
     module.exports = router;

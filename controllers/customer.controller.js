@@ -140,24 +140,33 @@ exports.getById = (req, res) => {
 };
 
 exports.updateById = (req, res) => {
+  const identifier = req.user.phone_number;
   const customerID = req.params.customerId;
   const reqBody = req.body;
-  console.log(customerID);
-  console.log(reqBody);
-  Customer.findOneAndUpdate(customerID, reqBody)
-      .then((customer) => {
-        res.status(200).json({
-          status: true,
-          message: "Customer was updated",
-          data: {
-            customer: {
-              _id: customer._id,
-              name: customer.name,
-              email: customer.email,
-              phone_number: customer.phone_number,
-            },
-          }
-        })
+  
+  UserModel.findOne({identifier})
+  .then((user) => {
+    const stores = user.stores;
+    stores.forEach((eachStore) => {
+      const customers= eachStore.customers;
+      const newCustomers = customers.map((eachCustomer) => {
+        if(eachCustomer._id == customerID) {
+          eachCustomer.phone_number = reqBody.phone_number;
+          eachCustomer.email = reqBody.email;
+          eachCustomer.name = reqBody.name;
+          return customers;
+        }
+        return false;
+      });
+
+      console.log(newCustomers);
+      user.save()
+      .then((result) => {
+        res.json({
+          success: true,
+          message: "Customer updated successfully.",
+          Customers: newCustomers,
+        });
       })
       .catch((error) => {
         res.status(500).json({
@@ -168,7 +177,19 @@ exports.updateById = (req, res) => {
             message: error.message
           }
         });
-      });
+      })
+    })
+  })
+  .catch((error) => {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+      error: {
+        code: 500,
+        message: error.message
+      }
+    });
+  })
 };
 
 exports.deleteById = (req, res) => {
