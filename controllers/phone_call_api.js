@@ -23,7 +23,7 @@ const twilioClient = require("twilio")(accountSid, auth);
  * Note: The number used should be a register twilio number
  *  */
 
-router.post("/v1/call", (req, res) => {
+router.post("/call/:customer_id", (req, res) => {
   /**
      * 
      * seen the number format required is (+234),  so the incoming number has to be

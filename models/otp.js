@@ -1,18 +1,18 @@
-const mogoose = require("mongoose");
+const mongoose = require("mongoose");
 
-const otpSchema = new mongoose.schema({
+const otpSchema = new mongoose.Schema({
     otp_code: {
             type: String,
             required: true
-        },
-        user_ref_code: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "user"
-        },
-        activated_at: {
-            type: Date,
-            default: Date.now()
-        }
+    },
+    user_ref_code: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "store_admin"
+    },
+    activated_at: {
+        type: Date,
+        default: Date.now()
+    }
 })
 
 module.exports = mongoose.model("otp", otpSchema);

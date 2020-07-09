@@ -4,7 +4,7 @@ info:
   version: "1.0.0"
   title: "MyCustomer API"
 host: "dev.customerpay.me"
-basePath: "/v1"
+basePath: "/"
 tags:
 - name: "Notification"
   description: "Everything about Notification"
@@ -18,16 +18,20 @@ tags:
   description: "Everything about User"
 - name: "Authentication"
   description: "Everything about Authentication"
+- name: "Complaint"
+  description: "Everything about Complaint"
+- name: "Debts"
+  description: "Everything on debts"
 schemes:
 - "https"
 paths:
-  /reminder/{customerId}:
+  /call/{customerId}:
     post:
       tags:
       - "Notification"
-      summary: "Add a new reminder to the customer"
+      summary: ""
       description: ""
-      operationId: "addReminder"
+      operationId: "call"
       consumes:
       - "application/json"
       produces:
@@ -35,21 +39,25 @@ paths:
       parameters:
       - name: "customerId"
         in: "path"
-        description: "Customer id to delete"
+        description: "Customer id to call"
         required: true
         type: "integer"
         format: "int64"
       - in: "body"
         name: "body"
-        description: "Reminder object that needs to be sent"
+        description: ""
         required: true
         schema:
-          $ref: "#/definitions/Reminder"
+          type: "object"
+          required:
+          - "number"
+          properties:
+            number:
+              type: "string"
+              example: "+23480000000"
       responses:
         "200":
           description: "Successful operation"
-          schema:
-            $ref: "#/definitions/Reminder"
         "405":
           description: "Invalid input"
   /reminder/sms/{customerId}:
@@ -267,6 +275,8 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Customer not found"
+      security:
+      - api_key: []
   /customer/update{customerId}:
     put:
       tags:
@@ -302,6 +312,8 @@ paths:
           description: "Customer not found"
         "405":
           description: "Validation exception"
+      security:
+      - api_key: []
   /customer/delete/{customerId}:
     delete:
       tags:
@@ -325,6 +337,8 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Customer not found"
+      security:
+      - api_key: []
   /customer/all:
     get:
       tags:
@@ -345,6 +359,8 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Customer not found"
+      security:
+      - api_key: []
   /store/new:
     post:
       tags:
@@ -498,6 +514,8 @@ paths:
             $ref: "#/definitions/User"
         "405":
           description: "Invalid input"
+      security:
+      - api_key: []
   /user/{userId}:
     get:
       tags:
@@ -523,12 +541,14 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "User not found"
+      security:
+      - api_key: []
   /user/update/{userId}:
     put:
       tags:
       - "User"
       summary: "Update an existing User"
-      description: ""
+      description: "Updates a user by id, with key-value pairs"
       operationId: "updateUser"
       consumes:
       - "application/json"
@@ -552,12 +572,12 @@ paths:
           description: "Successful operation"
           schema:
             $ref: "#/definitions/User"
-        "400":
-          description: "Invalid ID supplied"
         "404":
           description: "User not found"
-        "405":
-          description: "Validation exception"
+        "500":
+          description: "Server Error"
+      security:
+      - api_key: []
   /user/delete/{userId}:
     delete:
       tags:
@@ -581,6 +601,8 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Customer not found"
+      security:
+      - api_key: []
   /user/all:
     get:
       tags:
@@ -601,6 +623,65 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Customer not found"
+      security:
+      - api_key: []
+  /login/user:
+    post:
+      tags:
+      - "Authentication"
+      summary: "Get the app token"
+      description: ""
+      operationId: "signIn"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "UserSignUp object that needs to be registered"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            phone_number:
+              type: "string"
+            password:
+              type: "string"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              api_token:
+                type: "string"
+              status:
+                type: "boolean"
+              user:
+                type: "object"
+                properties:
+                  _id:
+                   type: "string"
+                  phone_number:
+                    type: "number"
+                  first_name:
+                    type: "string"
+                  last_name:
+                    type: "string"
+                  email:
+                    type: "string"
+                    example: "name@domain.com"
+                  is_active:
+                    type: "boolean"
+                  password:
+                    type: "string"
+                  user_role:
+                    type: "string"
+        "405":
+          description: "Invalid input"
   /register/user:
     post:
       tags:
@@ -624,7 +705,269 @@ paths:
           description: "Successful operation"
         "405":
           description: "Invalid input"
+  /auth/verify:
+    post:
+      tags:
+      - "Authentication"
+      summary: "Verify token"
+      description: ""
+      operationId: "authVerify"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "UserSignUp object that needs to be registered"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            id:
+              type: "string"
+            token:
+              type: "string"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+              message:
+                type: "string"
+        "405":
+          description: "Invalid input"
+  /auth/verify-phone:
+    post:
+      tags:
+      - "Authentication"
+      summary: "Verify phone"
+      description: ""
+      operationId: "authVerifyPhone"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "UserSignUp object that needs to be registered"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            phone:
+              type: "string"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+              message:
+                type: "string"
+        "401":
+          description: "Invalid input"
+  /complaint/new/:ownerId:
+    post:
+      tags:
+      - "Complaint"
+      summary: "Add a new complaint to the complaint"
+      description: ""
+      operationId: "addComplaint"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Complaint object that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/Complaint"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Complaint"
+        "500":
+          description: "Server Error. "
+  /complaint/update/{complaintId}:
+    put:
+      tags:
+      - "Complaint"
+      summary: "Update an existing complaint"
+      description: ""
+      operationId: "updateComplaint"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "complaintId"
+        in: "path"
+        description: "ID of complaint to be updated"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "Complaint object that needs to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/Complaint"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Complaint"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "User not found"
+        "405":
+          description: "Validation exception"
+  /complaint/delete/{complaintId}:
+    delete:
+      tags:
+      - "Complaint"
+      summary: "Deletes a Complaint"
+      description: ""
+      operationId: "deleteComplaint"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "complaintId"
+        in: "path"
+        description: "Complaint id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "Successful operation"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Customer not found"
+  /complaints/:ownerId:
+    get:
+      tags:
+      - "Complaint"
+      summary: "List of complaints"
+      description: ""
+      operationId: "getComplaint"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+           type: "array"
+           items:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Complaints not found"
+  /debt:
+    get:
+      tags:
+      - "Debts"
+      summary: "Get all the debts for a user"
+      description: ""
+      produces:
+      - "application/json"
+      responses: 
+        200:
+          description: "Operation successful"
+          schema:
+           type: "object"
+           properties:
+            message:
+              type: "string"
+            code: 
+              type: "string"
+            data: 
+              type: "string"
+        404: 
+          description: "Debts not found for user"
+        500:
+          description: "Internal Server error"         
+  /debt/new:
+    post:
+      tags:
+      - "Debts"
+      summary: "User can add a new debt reminder"
+      description: ""
+      operationId: "addDebtreminder"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "customer_number"
+        description: "customers phone number"
+        required: true
+      - in: "body"
+        name: "status"
+        description: "status of the debt,if fully paid or so"
+        required: true
+      - in: "body"
+        name: "message"
+        description: "reminder message"
+        required: true
+      - in: "body"
+        name: "pay_date"
+        description: "agreed day of payment"
+      - in: "body"
+        name: "token"
+        description: "user token"
+        required: true
+      schema:
+        $ref: "#/definitions/Debt"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            message: 
+              type: "string"
+        "500":
+          description: "Server Error. "
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "x-access-token"
+    in: "header"
 definitions:
+  Debt: 
+    type: "object"
+    required:
+    - "customer_phone_number"
+    - "message"
+    - "status"
+    properties: 
+      id:
+        type: "integer"
+      user_phone_number:
+        type: "integer"
+        description: "The phone number of of the customer"
+      customer_phone_number:
+        type: "integer"
+        description: "The phone number of of the customer"
+      message: 
+        type: "string"
+        description: "Message to send to the user"
+      status: 
+        type: "string"
+        description: "The status of the debt"
   Reminder:
     type: "object"
     required:
@@ -653,26 +996,30 @@ definitions:
   Transaction:
     type: "object"
     required:
-    - "customerId"
-    - "type"
     - "amount"
-    - "date"
+    - "interest"
+    - "total_amount"
+    - "description"
+    - "customer_phone_number"
+    - "store_name"
+    - "transaction_name"
+    - "transaction_role"
     properties:
-      id:
-        type: "integer"
-        format: "int64"
-      customerId:
-        type: "integer"
-        format: "int64"
-      type:
-        type: "integer"
-        format: "int64"
       amount:
         type: "number"
-      date:
-        type: "string"
-        example: "2020-01-01"
+      interest:
+        type: "number"
+      total_amount:
+        type: "number"
       description:
+        type: "string"
+      customer_phone_number:
+        type: "number"
+      store_name:
+        type: "string"
+      transaction_name:
+        type: "string"
+      transaction_role:
         type: "string"
   Customer:
     type: "object"
@@ -708,20 +1055,24 @@ definitions:
   User:
     type: "object"
     required:
-    - "name"
-    - "lastname"
-    - "phone"
+    - "first_name"
+    - "last_name"
+    - "phone_number"
+    - "email"
+    - "password"
     properties:
       id:
         type: "integer"
         format: "int64"
-      name:
+      first_name:
         type: "string"
         example: "Mikah"
-      lastname:
+      last_name:
         type: "string"
         example: "Mikah"
-      phone:
+      phone_number:
+        type: "number"
+      password:
         type: "string"
       email:
         type: "string"
@@ -729,27 +1080,46 @@ definitions:
   UserSignUp:
     type: "object"
     required:
-    - "name"
-    - "lastname"
-    - "phone"
-    - "required"
+    - "first_name"
+    - "last_name"
+    - "phone_number"
+    - "email"
+    - "password"
     properties:
       id:
         type: "integer"
         format: "int64"
-      name:
+      first_name:
         type: "string"
         example: "Mikah"
-      lastname:
+      last_name:
         type: "string"
         example: "Mikah"
-      phone:
+      phone_number:
         type: "string"
       password:
         type: "string"
       email:
         type: "string"
         example: "mikah@domain.com"
+      is_active:
+        type: "boolean"
+      api_token:
+        type: "string"
+      user_role:
+        type: "string"
+  Complaint:
+    type: "object"
+    required:
+    - "message"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      message:
+        type: "string"
+      status:
+        type: "string"
 externalDocs:
   description: "Find out more about dev.customerpay.me"
   url: "https://dev.customerpay.me"

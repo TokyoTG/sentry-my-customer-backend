@@ -1,129 +1,172 @@
 const jwt = require("jsonwebtoken");
-const bCrypt = require('bcryptjs');
+const bCrypt = require("bcryptjs");
+const { body } = require('express-validator/check');
 
-const UserModel = require('../models/user');
-const CustomerModel = require('../models/customer');
+const UserModel = require("../models/store_admin");
+const CustomerModel = require("../models/customer");
+
+exports.validate = (method) => {
+  switch (method) {
+    case "login": {
+      return [body("phone_number").isInt(), body("password")];
+    }
+  }
+};
 
 //  Login User
 module.exports.loginUser = async (req, res, next) => {
-    const { password, phone_number } = req.body;
+  const { password, phone_number } = req.body;
 
-    //  Get instance of the
-    const user = UserModel({
-        password: password,
-        phone_number: phone_number,
-    });
+  //  Get instance of the
+  const user = UserModel({});
+  user.local.phone_number = phone_number;
+  user.local.password = password;
+  user.identifier = phone_number;
 
-    //  Check if the users phone persists in the DB
-    await UserModel.findOne({ phone_number: user.phone_number, })
-        .then((userExist) => {
-            if (userExist) {
-                //  Go ahead to compare the password match.
-                bCrypt.compare(user.password, userExist.password)
-                    .then((doPasswordMatch) => {
-                        if (doPasswordMatch) {
-                            //  Generate a login api_token for subsequent authentication.
-                            const apiToken = jwt.sign({
-                                phone_number: userExist.phone_number,
-                                email: userExist.email,
-                                password: user.password,
-                                is_active: userExist.is_active,
-                                user_role: userExist.user,
-                            }, process.env.JWT_KEY, {
-                                expiresIn: "1h",
-                            });
-                            res.status(200).json({
-                                message: "You're logged in successfully.",
-                                api_token: apiToken,
-                                status: true,
-                                user: {
-                                    _id: userExist._id,
-                                    phone_number: userExist.phone_number,
-                                    first_name: userExist.first_name,
-                                    last_name: userExist.last_name,
-                                    email: userExist.email,
-                                    is_active: userExist.is_active,
-                                    password: userExist.password,
-                                    user_role: userExist.user_role,
-                                }
-                            });
-                        }
-                        else {
-                            res.json({
-                                message: "Invalid Password.",
-                                status: false,
-                            });
-                        }
-                    })
-                    .catch((error) => {
-                        res.status(500).json({
-                            Error: error,
-                        });
-                    });
-            }
+  //  Check if the users phone persists in the DB
+  await UserModel.findOne({ identifier: user.identifier })
+    .then((userExist) => {
+      if (userExist) {
+        //  Go ahead to compare the password match.
+        bCrypt
+          .compare(user.local.password, userExist.local.password)
+          .then((doPasswordMatch) => {
+            if (doPasswordMatch) {
+              //  Generate a login api_token for subsequent authentication.
+              const apiToken = jwt.sign(
+                {
+                  phone_number: userExist.identifier,
+                  password: user.local.password,
+                },
+                process.env.JWT_KEY,
+                {
+                  expiresIn: "1h",
+                }
+              );
+              userExist.api_token = apiToken;
+              userExist.save();
+              res.status(200).json({
+                success: true,
+                message: "You're logged in successfully.",
+                data: {
+                  statusCode: 200,
+                  user: userExist,
+                },
+              });
+            } 
             else {
-                res.json({
-                    Message: "Invalid phone number.",
-                    Status: false,
-                });
+              res.status(401).json({
+                success: false,
+                message: "Invalid Password.",
+                error: {
+                  code: 401,
+                  description: "Invalid Password",
+                },
+              });
             }
-        })
-        .catch((error) => {
+          })
+          .catch((error) => {
             res.status(500).json({
-                Error: error,
+              success: false,
+              message: error,
+              error: {
+                code: 500,
+                description: error,
+              },
             });
+          });
+      } else {
+        res.status(401).json({
+          success: false,
+          message: "Invalid phone number.",
+          error: {
+            code: 401,
+            description: "Invalid phone number.",
+          },
         });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "An internal error occurred",
+        error: {
+          statusCode: 500,
+          description: error,
+        },
+      });
+    });
 };
-
 
 //  Login Customer
 module.exports.loginCustomer = async (req, res, next) => {
-    const { name, phone_number } = req.body;
+  const { name, phone_number } = req.body;
 
-    //  Get instance of the
-    const user = CustomerModel({
-        name: name,
-        phone_number: phone_number,
+  const reqBody = {
+    phone_number: phone_number,
+    name: name,
+  };
+
+  //Validate the "reqBody" object using joiValidator function imported.
+  const { error, value } = await joiValidator.userLoginValidator.validate(
+    reqBody
+  );
+  //  Check if there is any validation error.
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: "An internal error occurred",
+      error: {
+        statusCode: 400,
+        description: error.details[0].message,
+      },
     });
+  }
 
-    //  Check if the users phone persists in the DB
-    await CustomerModel.findOne({ phone_number: user.phone_number })
-        .then((userExist) => {
-            if (userExist) {
-                //  Go ahead to generate a login api_token for subsequent authentication..
-                const apiToken = jwt.sign({
-                    phone_number: userExist.phone_number,
-                    name: userExist.name,
-                }, process.env.JWT_KEY, {
-                    expiresIn: "1h",
-                });
+  //  Get instance of the
+  const user = CustomerModel({
+    name: value.name,
+    phone_number: value.phone_number,
+  });
 
-                res.status(200).json({
-                    message: "You're logged in successfully.",
-                    api_token: apiToken,
-                    status: true,
-                    user: {
-                        _id: userExist._id,
-                        phone_number: userExist.phone_number,
-                        name: userExist.name,
-                    }
-                });
-            }
-            else {
-                res.json({
-                    Message: "Invalid phone number.",
-                    Status: false,
-                });
-            }
-        })
-        .catch((error) => {
-            res.status(500).json({
-                Error: error,
-            });
+  //  Check if the users phone persists in the DB
+  await CustomerModel.findOne({ phone_number: user.phone_number })
+    .then((userExist) => {
+      if (userExist) {
+        //  Go ahead to generate a login api_token for subsequent authentication..
+        const apiToken = jwt.sign(
+          {
+            phone_number: userExist.phone_number,
+            name: userExist.name,
+          },
+          process.env.JWT_KEY,
+          {
+            expiresIn: "1h",
+          }
+        );
+
+        res.status(200).json({
+          message: "You're logged in successfully.",
+          api_token: apiToken,
+          status: true,
+          user: {
+            _id: userExist._id,
+            phone_number: userExist.phone_number,
+            name: userExist.name,
+          },
         });
+      } else {
+        res.json({
+          message: "Invalid phone number.",
+          Status: false,
+        });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({
+        Error: error,
+      });
+    });
 };
 
-
-//  Login User
-module.exports.login
-
+module.exports.login;

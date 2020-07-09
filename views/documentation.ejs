@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="HandheldFriendly" content="true">
+    <title>Documentation</title>
+    <link href="//db.onlinewebfonts.com/c/1064f0ad1cb65fdab43bb592ddd8aa91?family=Gilroy-Bold" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+</head>
+
+<body style="font-family: 'gilroybold';">
+    <div class="nav-bar" style="background-color: #FFD43C;" id="top">
+        <div class="navbar-brand pl-3" style="font-weight: 500;font-family: 'gilroybold'; font-size:xx-large;"><img src="public/img/fulllogo.png" alt=""> Documentation</div>
+
+        <nav>
+            <ul class="menu">
+                <li class="logo"><a href="#">Introduction</a></li>
+                <li class="item"><a href="#auth">Authentication</a></li>
+                <li class="item"><a href="#notification">Notification</a></li>
+                <li class="item"><a href="#transaction">Transaction</a></li>
+                <li class="item"><a href="#user">Store Assistant</a></li>
+                <li class="item"><a href="#customer">Customer</a></li>
+                <li class="item"><a href="#complaint">Complaint</a></li>
+                <li class="item"><a href="#store">Store</a></li>
+                <!-- <li class="item"><a href="#call">Call</a></li> -->
+                <li class="toggle"><a href="#"><i class="fas fa-bars"></i></a></li>
+            </ul>
+    </div>
+
+    <div class="main pt-5 container">
+        <div class="intro">
+            <h1>Introduction</h1>
+            <p><strong>/docs</strong> - You are here.</p>
+            <hr>
+            <p>The <span style="font-weight: 800;font-family: 'gilroybold';">MyCustomer API</span> is responsible for various actions of the MyCustomer web app and mobile app</p>
+            <p>Such actions include:</p>
+            <ol>
+                <li>Creating and managing users</li>
+                <li>Creating and managing customers</li>
+                <li>Authenticating users and customers</li>
+                <li>Creating and managing complaints</li>
+                <li>Creating and managing stores</li>
+                <li>Sending notifications to customers</li>
+                <li>Calling customers</li>
+            </ol>
+        </div>
+        <div class="auth" id="auth">
+            <h1 class="">Authentication</h1>
+            <hr>
+            <p>Each user is assigned a unique api_token on registration which will be used in subsequent API calls</p>
+            <h4>How to pass the token</h4>
+            <p>To authenticate your call, you are to pass the provided API token in the header with the following key</p>
+            <ul class="alert alert-success">
+                <li>x-access-token</li>
+            </ul>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>User register<strong> - /register/user or /register/customer</strong></li>
+                <h6>Body: </h6>
+                <ul  class="alert alert-primary">
+                    <li>phone_number</li>
+                    <li>password</li>
+                </ul>
+                <li>User login<strong> - /login/user</strong></li>
+                <h6>Body: </h6>
+                <ul  class='alert alert-primary'>
+                    <li>phone_number</li>
+                    <li>password</li>
+                </ul>
+                 <li>User update<strong> - /store-admin/update</strong></li>
+                <h6>Body: </h6>
+                <ul  class='alert alert-primary'>
+                  <li>first_name</li>
+                    <li>last_name</li>
+                    <li>phone_number</li> 
+                    <li>email</li>
+                </ul>
+                
+
+                <!-- FACEBOOK LOGIN -->
+                <li>Facebook login<strong> - /login/fb_login [GET]</strong></li>
+
+                <ul>
+                    <h5 class="mt-2">Account Activation</h5>
+                    <p>Also, a user is required to verify his/her phone number after registration in order to activate his/her account.</p>
+                    <li>Send SMS(OTP)<strong> - /otp/send [POST]</strong></li>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>phone_number</li>
+                    </ul>
+                    <li>Verify OTP<strong> - /otp/verify [POST]</strong></li>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>verify: (from response in <strong>/otp/verify</strong> )</li>
+                        <li>phone_number</li>
+                    </ul>
+
+                            <div class="recover" id="recover">
+            <h1 class="">Password Recovery</h1>
+            <hr>
+            <p>Change password <br>This can be done via <strong>Email</strong> or <strong>SMS (OTP)</strong></p>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Recover<strong> - /recover [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>phone_number</li>
+                    </ul>
+                </li>
+                <li>Reset <strong> - /reset [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>token</li>
+                        <li>password</li>
+                    </ul>
+                </li>
+
+                 <h4>Update Password</h4>
+            <ul>
+                <li>Update password<strong> - /update-password [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>oldPassword</li>
+                          <li>newPassword</li>
+                            <li>confirmPassword</li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+                </ul>
+            </ul>
+        </div>
+        <div class="user" id="user">
+            <h1 class="">Store Assistant <small>( Previously <strong>user</strong> )</small></h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Create assistant<strong>- /assistant/new [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>phone_number</li>
+                        <li>name</li>
+                        <li>email</li>
+                        <li>password</li>
+                    </ul>
+                </li>
+                <li>Retrieve all users<strong>- /assistant [GET]</strong></li>
+                <li>Retrieve user<strong> - /assistant/:assistant_id [GET]</strong>
+                    <h6>Params</h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
+                <li>Update assistant<strong>- /assistant/update/:assistant_id [PUT]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>assistant_id</li>
+                    </ul>
+                    <h6>Body</h6>
+                    <ul class="alert alert-primary">
+                        <li>content[data]</li>
+                    </ul>
+                </li>
+                <li>Delete assistant (logical delete)<strong>- /assistant/delete/:assistant_id</strong></li>
+            </ul>
+        </div>
+        <div>
+            <h1 class="store" id="store">Store</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Create store<strong> - /store/new [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>store_name</li>
+                        <li>shop_address</li>
+                        <li>tagline</li>
+                        <li>phone_number</li>
+                        <li>email</li>
+                    </ul>
+                </li>
+                <li>Retrieve store <strong> - /store/:store_id [GET]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>store_id</li>
+                    </ul>
+                </li>
+                <li>Update store<strong> - /store/update/:store_id [PUT]</strong>
+                <h6>Body</h6>
+                <ul class="alert alert-primary">
+                    <li>shop_address</li>
+                    <li>store_name</li>
+                    <li>current_user</li>
+                </ul>
+                </li>
+                <li>Delete store<strong> - /store/delete/:store_id [DELETE]</strong>
+                    <h6>Body</h6>
+                    <ul class="alert alert-primary">
+                        <li>current_user</li>
+                    </ul>
+                </li>
+                <li>View all user's stores<strong> - /store [GET]</strong>
+                </li>
+            </ul>
+        </div>
+        <div class="complaint" id="complaint">
+            <h1 class="">Complaint</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Register new complaint<strong>- /complaint/new/:ownerId [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>name</li>
+                        <li>email</li>
+                        <li>message</li>
+                    </ul>
+                </li>
+                <li>Retrieve all complaints<strong> - /complaints/:ownerId [GET]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+                </li>
+
+                <li>Retrieve a single complaint<strong> - /complaint/:ownerId/:complaintId [GET]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                        <li>complaint_id</li>
+                    </ul>
+                </li>
+
+                <li>Update complaint<strong> - /complaint/update/:ownerId [PUT]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                    </ul>
+
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>complaint_id</li>
+                        <li>name</li>
+                        <li>email</li>
+                        <li>message</li>
+                    </ul>
+                </li>
+                <li>Delete a complaint form<strong> - /complaint/delete/:ownerId/:complaintId [DETETE]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>ownerId- Store Owner's (Business Owner) id </li>
+                        <li>complaint_id</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="transaction" id="transaction">
+            <h1 class="">Transaction</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Add new transaction<strong>- /transaction/new</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>amount</li>
+                        <li>interest</li>
+                        <li>total_amount</li>
+                        <li>description</li>
+                        <li>transaction_name</li>
+                        <li>transaction_role</li>
+                        <li>type</li>
+                        <li>store_name</li>
+                        <li>phone_number</li>
+                    </ul>
+                </li>
+                <li>View all transactions<strong> - /transaction</strong></li>
+                <li>view a single transaction<strong> - /transaction/:transaction_id [UPDATE]</strong>
+                   
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>transaction id </li>
+                    </ul>
+                </li>
+                <li>Update transaction<strong> - /transaction/update/:transaction_id</strong>
+                                         
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>Entries to update</li>
+                        <li>store_name</li>
+                    </ul>
+                </li>
+                <li>Delete transaction (logical delete)<strong>- /transaction/delete/:transaction_id</strong></li>
+            </ul>
+        </div>
+        <div class="customer" id="customer">
+            <h1 class="">Customer</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Create customer<strong> - /customer/new [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>name</li>
+                        <li>phone_number</li>
+                        <li>store_name</li>
+                    </ul>
+                </li>
+                <li>Retrieve customer<strong> - /customer/:customer_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
+                <li>Update customer details<strong> - /customer/update/:customer_id [PUT] </strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>Entries to update</li>
+                    </ul>
+                </li>
+                <li>Delete customer (logical delete)<strong> - /customer/delete/:customer_id [DELETE]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
+                <li>View all customers<strong> - /customer/ [GET]</strong>
+                    
+                </li>
+                
+           
+        </div>
+                <div class="debt" id="debt">
+            <h1 class="">Debt</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Create Debt<strong> - /debt/new [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>transaction_id</li>
+                        <li>customer_phone_number</li>
+                        <li>store_name</li>
+                        <li>amount</li>
+                        <li>status</li>
+                        <li>message</li>
+                        <li>pay_date</li>
+                    </ul>
+                </li>
+                <li>Retrieve debts<strong> - /debt/:debt_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
+                <li>Update debt details<strong> - /debt/update/:debt_id [PUT] </strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>debt_id</li>
+                    </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>Entries to update</li>
+                    </ul>
+                </li>
+                <li>Delete debt (logical delete)<strong> - /debt/delete/:debt_id [DELETE]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>debt_id</li>
+                    </ul>
+                </li>
+                <li>View all debts<strong> - /debt/ [GET]</strong>
+                    
+                </li>
+                
+           
+        </div>
+        <div class="notification" id="notification">
+            <h1 class="">Notification</h1>
+            <hr>
+            <p>Notify a customer of outstanding payments or even send them a season's greeting. <br>This can e done via <strong>Email</strong> or <strong>SMS</strong></p>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Send SMS reminder<strong> - /reminder/sms/:customer_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>message</li>
+                    </ul>
+                </li>
+                <li>Send Email reminder <strong> - /reminder/email/:customer_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>subject</li>
+                        <li>text</li>
+                        <li>store_id</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- <div class="call" id="call">
+            <h1 class="">Call</h1>
+            <hr>
+            <h4>Endpoint</h4>
+            <p>You can also call a customer using the below endpoint</p>
+            <ul>
+                <li>Call a customer's number<strong>- /call/:customer_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
+            </ul>
+        </div> -->
+    </div>
+    <a href="#top" id="controller">
+        <div class="controller text-center" style="color: #fff">↑</div>
+    </a>
+    <div class="footer" style="background-color: #FFD43C;padding: 20px;">
+        <p class="text-center" style="font-weight: 800;font-family: 'gilroybold';">[HNGi7 TEAM SENTRY]</p>
+        <p class="text-center" style="font-weight: 800;font-family: 'gilroybold';"><a href="https://customerpay.me">customerpay.me</a></p>
+    </div>
+</body>
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    body {
+        color: #5b5b5b;
+        font-size: large;
+    }
+    
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        color: #323131;
+    }
+    
+    .nav-link {
+        background-color: #FF8C5F;
+        color: #fff;
+        margin: 0 5px
+    }
+    
+    nav {
+        background: #FF8C5F;
+        padding: 0 15px;
+    }
+    
+    a {
+        color: white;
+        text-decoration: none;
+    }
+    
+    .menu {
+        list-style-type: none;
+    }
+    
+    .logo {
+        font-size: 20px;
+        padding: 7.5px 10px 7.5px 0;
+    }
+    
+    .item {
+        padding: 10px;
+    }
+    
+    .item.button {
+        padding: 9px 5px;
+    }
+    
+    .item:not(.button) a:hover,
+    .item a:hover::after {
+        color: blue;
+    }
+    /* Mobile menu */
+    
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .menu li a {
+        display: block;
+        padding: 15px 5px;
+    }
+    
+    .menu li.subitem a {
+        padding: 15px;
+    }
+    
+    .toggle {
+        order: 1;
+        font-size: 20px;
+    }
+    
+    .item.button {
+        order: 2;
+    }
+    
+    .item {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        display: none;
+    }
+    
+    .active .item {
+        display: block;
+    }
+    /* Tablet menu */
+    
+    @media all and (min-width: 700px) {
+        .menu {
+            justify-content: center;
+        }
+        .logo {
+            flex: 1;
+        }
+        .item.button {
+            width: auto;
+            order: 1;
+            display: block;
+        }
+        .toggle {
+            flex: 1;
+            text-align: right;
+            order: 2;
+        }
+        /* Button up from tablet screen */
+        .menu li.button a {
+            padding: 10px 15px;
+            margin: 5px 0;
+        }
+    }
+    /* Desktop menu */
+    
+    @media all and (min-width: 960px) {
+        .menu {
+            align-items: flex-start;
+            flex-wrap: nowrap;
+            background: none;
+        }
+        .logo {
+            order: 0;
+        }
+        .item {
+            order: 1;
+            position: relative;
+            display: block;
+            width: auto;
+        }
+        .button {
+            order: 2;
+        }
+        .toggle {
+            display: none;
+        }
+        .submenu-active {
+            border-radius: 0;
+        }
+    }
+    
+    .controller {
+        padding: 5px;
+        background-color: #FF8C5F;
+        width: 50px;
+        float: right;
+        position: fixed;
+        bottom: 10%;
+        right: 10%;
+    }
+</style>
+<script>
+    const toggle = document.querySelector(".toggle");
+    const menu = document.querySelector(".menu");
+
+    /* Toggle mobile menu */
+    function toggleMenu() {
+        if (menu.classList.contains("active")) {
+            menu.classList.remove("active");
+            toggle.querySelector("a").innerHTML = "<i class='fas fa-bars'></i>";
+        } else {
+            menu.classList.add("active");
+            toggle.querySelector("a").innerHTML = "<i class='fas fa-times'></i>";
+        }
+    }
+
+    /* Event Listener */
+    toggle.addEventListener("click", toggleMenu, false);
+
+    const items = document.querySelectorAll(".item");
+
+    const controller = document.getElementById("controller")
+
+   window.onscroll = function () { 
+       toTop() 
+    };
+    function toTop() {
+        if (document.body.scrollTop > 30 || document.documentElement.scrollTop > 30) {
+            controller.style.display = "block";
+        } else {
+            controller.style.display = "none";
+        }
+    }
+</script>
+
+</html>

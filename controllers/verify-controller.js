@@ -1,6 +1,7 @@
 const Response = require('../util/response_manager');
 const HttpStatus = require('../util/http_status');
 const express = require('express');
+const User = require("../models/user");
 
 const router = express.Router();
 
@@ -35,15 +36,26 @@ module.exports = {
          try {
              const id = req.body.id
              const token = req.body.token
+             const phone = req.body.phone
              messagebird.verify.verify(id, token, (err, response) => {
                  if (err) {
                      res.status(err.statusCode).json({
-                         status: "Bad request",
-                         message: err
+                         success: false,
+                         message: "Phone number could not be verified",
+                         error: err
                      });
                  } else {
+                    User.findOne({ phone_number:  phone}).catch(err =>{
+                        res.status(404).json({
+                            success: false,
+                            message: "Could not find user with that phone number"
+                        })
+                    }).then(success =>{
+                        success.is_active = 1
+                        success.save()
+                    })
                      res.status(200).json({
-                         status: "success",
+                         success: "true",
                          message: response
                      })
                  }

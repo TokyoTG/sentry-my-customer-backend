@@ -1,28 +1,18 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
+const mongoose = require("mongoose"),
+	  Customer = require("./customer");
 
-const Store = new mongoose.Schema({
-  store_ref_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "store"
-  },
-  store_name: {
-      type: String,
-      required: true
-    },
-    Phone_number: {
-      type: String,
-      required: true
-    },
-    tagline: {
-      type: String,
-      required: true
-    },
-    shop_address: {
-      type: String,
-      required: true
-    },
-    email: String
-}, { timestamps: true })
 
-module.exports = mongoose.model('store', Store)
+const storeSchema = new mongoose.Schema({
+	store_name: { type: String, required: true },
+	phone_number: {
+		type: String, Default: "Not set"
+	},
+	tagline: { type: String , Default: "Not set"},
+	shop_address: { type: String, required: true },
+	email: { type: String, default: "Not set" },
+	customers: [
+		Customer.schema
+	]
+}, { timestamp: true });
+
+module.exports = mongoose.model("store", storeSchema);

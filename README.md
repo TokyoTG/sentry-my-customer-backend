@@ -25,7 +25,7 @@ Step 2: Copy env.example to .env
 
 Step 3: npm run start
 
-Step 4: Go to http://localhost:5000
+Step 4: Go to http://localhost:3000
 
 A welcome message will come up with status code 200
 
@@ -42,7 +42,7 @@ Step 3: git pull upstream develop
 
 Step 4: git push origin < BRANCH_NAME >
 
-Go to the repository https://github.com/hngi/sentry-my-customer-backend
+Go to the repository https://github.com/hngi/sentry-my-customer-api
 
 As soon as you get there, you are going to see a green ‘compare and create a pull request’
 

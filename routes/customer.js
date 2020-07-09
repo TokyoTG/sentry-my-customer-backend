@@ -1,11 +1,14 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const customerController = require("./../controllers/customer.controller.js");
+const bodyValidator = require("../util/body_validator");
 
-router.post('/customer/new', customerController.create)
-router.get('/customer/all', customerController.getAll)
-router.put('/customer/update/:customerId', customerController.updateById)
-router.delete('/customer/delete/:customerId', customerController.deleteById)
-router.get('/customer/:customerId', customerController.getById)
+const auth = require("../auth/auth");
+router.use("/customer", auth);
+router.post("/customer/new", customerController.validate("body"), bodyValidator, customerController.create);
+router.get("/customer", customerController.getAll);
+router.put("/customer/update/:customerId", bodyValidator, customerController.updateById);
+router.delete("/customer/delete/:customerId", customerController.deleteById);
+router.get("/customer/:customerId", customerController.getById);
 
-module.exports = router
+module.exports = router;
