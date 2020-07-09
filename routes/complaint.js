@@ -8,7 +8,7 @@ const { check, validationResult } = require('express-validator/check');
 router.get("/complaints/:ownerId", auth, complaintsController.findAll);
 
 // Get a single complaint
-router.get("/complaint/:ownerId", auth, complaintsController.findOne)
+router.get("/complaint/:ownerId/:complaintId", auth, complaintsController.findOne)
 
 // Update a complaint
 router.put("/complaint/update/:ownerId", complaintsController.update);
@@ -29,6 +29,6 @@ router.post(
 );
 
 // Delete a complaint
-router.delete("/complaint/delete/:ownerId", auth, complaintsController.deleteOne);
+router.delete("/complaint/delete/:ownerId/:complaintId", auth, complaintsController.deleteOne);
 
 module.exports = router;

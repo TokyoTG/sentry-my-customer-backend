@@ -1,109 +1,128 @@
-require("dotenv").config();
-const Response = require('../util/response_manager'),
-            HttpStatus = require('../util/http_status'),
-            express = require('express'),
-            nodemailer = require('nodemailer'),
-            userModel = require("../models/store_admin"),
-            Customer = require("../models/customer");
-
-
-const router = express.Router();
-const { MAIL_USERNAME, MAIL_PASSWORD, MAIL_SERVICE } = process.env;
-
-router.use(require("body-parser").urlencoded({extended: true}));
+const nodemailer = require("nodemailer"),
+  userModel = require("../models/store_admin");
 
 module.exports = {
-    sendMail(req, res){
-        const transporter = nodemailer.createTransport({
-            service: MAIL_SERVICE,
-            auth: {
-                user: MAIL_USERNAME,
-                pass: MAIL_PASSWORD
-            }
+  sendMail: () => async (req, res) => {
+    try {
+      const transporter = nodemailer.createTransport({
+        service: process.env.MAIL_SERVICE,
+        host: process.env.MAIL_HOST,
+        port: process.env.MAIL_PORT,
+        secure: false,
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASSWORD,
+        },
+      });
+      if (!req.body.store_id || !req.body.html || !req.body.subject) {
+        const html = req.body.html ? {} : { html: 'Path "html" is required' },
+          store_id = req.body.store_id
+            ? {}
+            : { store_id: 'Path "store_id" is required' },
+          subject = req.body.subject
+            ? {}
+            : { subject: 'Path "subject" is required' };
+        return res.status(422).json({
+          success: false,
+          message: "Your request is missing required fields",
+          error: {
+            code: 422,
+            errors: {
+              ...html,
+              ...store_id,
+              ...subject,
+            },
+          },
         });
+      }
 
-        //Find a customer and get the email
-        const identifier = req.user.phone_number;
-        const customer_id = req.params.customer_id;
-        const store_id = req.body.store_id; // the store where the customer is located
-        userModel.findOne({
-                    identifier
-                }, (err, foundUser) => {
-            if (err || foundUser == null || foundUser == undefined) {
-                res.status(404).json({
-                    success: false,
-                    message: "Customer not found",
-                    error: {
-                        statusCode: 404,
-                        description: "Could not find a store admin with the identifier: " + identifier
-                    }
-                });
-            }else{
-                const stores = foundUser.stores;
-                for(var i = 0; i < stores.length; i++){
-                    if(stores[i]._id == store_id){
-                        customers = stores[i].customers
-                        for(var i = 0; i < customers.length; i++){
-                            if (customers[i]._id == customer_id){
-                                email = customers[i].email
-                                if (email && email != "Not set" || undefined) {
-                                    const recipient = email,
-                                        subject = req.body.subject,
-                                        text = req.body.text;
+      //Find a customer and get the email
+      const identifier = req.user.phone_number;
+      const customer_id = req.params.customer_id;
+      const store_id = req.body.store_id;
 
-                                    const params = {
-                                        from: MAIL_USERNAME,
-                                        to: recipient,
-                                        subject: subject,
-                                        text: text
-                                    };
+      const user = await userModel.findOne({ identifier });
+      if (!user) {
+        return res.status(401).json({
+          message: "Forbidden",
+          success: false,
+          error: {
+            code: 401,
+            message: "You cannot access this resource",
+          },
+        });
+      }
+      const store = await user.stores.find(
+        (elem) => elem._id.toString() === store_id
+      );
+      if (!store) {
+        return res.status(404).json({
+          success: false,
+          message: "Not found",
+          error: {
+            message: "Could not find store",
+            code: 404,
+          },
+        });
+      }
 
-                                    transporter.sendMail(params, function (error, info) {
-                                        if (error) {
-                                            res.status(401).json({
-                                                success: false,
-                                                message: "Bad request",
-                                                error: {
-                                                    statusCode: 401,
-                                                    description: error
-                                                }
-                                            })
-                                        } else {
-                                            res.status(200).json({
-                                                success: true,
-                                                message: "Email sent successfully",
-                                                data: {
-                                                    statusCode: 200,
-                                                    description: info
-                                                }
-                                            })
-                                        }
-                                    });
-                                } else {
-                                    return res.status(400).json({
-                                        success: false,
-                                        message: "Email Not set",
-                                        error: {
-                                            statusCode: 400,
-                                            description: "Please update customer email address in order to send emails"
-                                        }
-                                    })
-                                }
-                            }else{
-                                return res.send({
-                                    status: "fail",
-                                    message: "No customer with id " + customer_id + " in store " + stores[i].store_name
-                                })
-                            }
-                        }
-                    }else{
-                        return res.send({
-                            status: "fail",
-                            message: "store doesn't exists"
-                        })
-                    }
-                }
-            }
-        })
+      const customer = await store.customers.find(
+        (elem) => elem._id.toString() === customer_id
+      );
+      if (!customer) {
+        return res.status(404).json({
+          success: false,
+          message: "Not found",
+          error: {
+            message: "Could not find customer",
+            code: 404,
+          },
+        });
+      }
+      if (!customer.email) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing requirement",
+          error: {
+            code: 400,
+            message: "customer does not have a registered email",
+          },
+        });
+      }
+
+      const mailOptions = {
+        from: store.store_name,
+        to: customer.email,
+        subject: req.body.subject,
+        html: req.body.html,
+      };
+      return transporter.sendMail(mailOptions, (err, data) => {
+        if (err) {
+          return res.status(err.status || 500).json({
+            success: false,
+            message: "An unexpected error occurred",
+            error: {
+              ...err,
+              message: err.message,
+            },
+          });
+        } else {
+          return res.status(200).json({
+            success: true,
+            message: "Email sent successfully",
+            data,
+          });
+        }
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "An unexpected error occurred",
+        success: false,
+        error: {
+          code: 500,
+          message: error.message,
+        },
+      });
     }
-}
+  },
+};

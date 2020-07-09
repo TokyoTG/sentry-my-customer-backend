@@ -5,9 +5,9 @@ const auth = require("../auth/auth");
 
 router.post('/debt/new', auth, debt.create)
 router.post('/debt/new/:transaction_id', auth, debt.create)
-router.get('/debt/all', auth, debt.getAll)
-router.put('/debt/update/:customerId', auth, debt.updateById)
-router.delete('/debt/delete/:customerId', auth, debt.deleteById)
-router.get('/debt/:customerId', auth, debt.getById)
+router.get('/debt', auth, debt.getAll)
+router.put('/debt/update/:debtId', auth, debt.updateById)
+router.delete('/debt/delete/:debtId', auth, debt.deleteById)
+router.get('/debt/:debtId', auth, debt.getById)
 
 module.exports = router

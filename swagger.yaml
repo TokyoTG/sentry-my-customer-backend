@@ -20,6 +20,8 @@ tags:
   description: "Everything about Authentication"
 - name: "Complaint"
   description: "Everything about Complaint"
+- name: "Debts"
+  description: "Everything on debts"
 schemes:
 - "https"
 paths:
@@ -874,12 +876,98 @@ paths:
           description: "Invalid ID supplied"
         "404":
           description: "Complaints not found"
+  /debt:
+    get:
+      tags:
+      - "Debts"
+      summary: "Get all the debts for a user"
+      description: ""
+      produces:
+      - "application/json"
+      responses: 
+        200:
+          description: "Operation successful"
+          schema:
+           type: "object"
+           properties:
+            message:
+              type: "string"
+            code: 
+              type: "string"
+            data: 
+              type: "string"
+        404: 
+          description: "Debts not found for user"
+        500:
+          description: "Internal Server error"         
+  /debt/new:
+    post:
+      tags:
+      - "Debts"
+      summary: "User can add a new debt reminder"
+      description: ""
+      operationId: "addDebtreminder"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "customer_number"
+        description: "customers phone number"
+        required: true
+      - in: "body"
+        name: "status"
+        description: "status of the debt,if fully paid or so"
+        required: true
+      - in: "body"
+        name: "message"
+        description: "reminder message"
+        required: true
+      - in: "body"
+        name: "pay_date"
+        description: "agreed day of payment"
+      - in: "body"
+        name: "token"
+        description: "user token"
+        required: true
+      schema:
+        $ref: "#/definitions/Debt"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            message: 
+              type: "string"
+        "500":
+          description: "Server Error. "
 securityDefinitions:
   api_key:
     type: "apiKey"
     name: "x-access-token"
     in: "header"
 definitions:
+  Debt: 
+    type: "object"
+    required:
+    - "customer_phone_number"
+    - "message"
+    - "status"
+    properties: 
+      id:
+        type: "integer"
+      user_phone_number:
+        type: "integer"
+        description: "The phone number of of the customer"
+      customer_phone_number:
+        type: "integer"
+        description: "The phone number of of the customer"
+      message: 
+        type: "string"
+        description: "Message to send to the user"
+      status: 
+        type: "string"
+        description: "The status of the debt"
   Reminder:
     type: "object"
     required:

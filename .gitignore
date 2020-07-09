@@ -1,3 +1,6 @@
 node_modules
 .env
 *.lock
+yarn-error.log
+/.idea
+workspace.xml

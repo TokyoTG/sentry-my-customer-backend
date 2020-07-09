@@ -59,19 +59,19 @@
             </ul>
             <h4>Endpoints</h4>
             <ul>
-                <li>User register<strong> - /register/user or /register/customer</strong></li>
+                <li>User register<strong> - /register/user or /register/customer</strong></li>
                 <h6>Body: </h6>
                 <ul  class="alert alert-primary">
                     <li>phone_number</li>
                     <li>password</li>
                 </ul>
-                <li>User login<strong> - /login/user</strong></li>
+                <li>User login<strong> - /login/user</strong></li>
                 <h6>Body: </h6>
                 <ul  class='alert alert-primary'>
                     <li>phone_number</li>
                     <li>password</li>
                 </ul>
-                 <li>User update<strong> - /store-admin/update</strong></li>
+                 <li>User update<strong> - /store-admin/update</strong></li>
                 <h6>Body: </h6>
                 <ul  class='alert alert-primary'>
                   <li>first_name</li>
@@ -82,33 +82,56 @@
                 
 
                 <!-- FACEBOOK LOGIN -->
-                <li>Facebook login<strong> - /login/fb_login [GET]</strong></li>
+                <li>Facebook login<strong> - /login/fb_login [GET]</strong></li>
 
                 <ul>
                     <h5 class="mt-2">Account Activation</h5>
                     <p>Also, a user is required to verify his/her phone number after registration in order to activate his/her account.</p>
-                    <li>Send SMS(OTP)<strong> - /otp/send [POST]</strong></li>
+                    <li>Send SMS(OTP)<strong> - /otp/send [POST]</strong></li>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>phone</li>
+                        <li>phone_number</li>
                     </ul>
                     <li>Verify OTP<strong> - /otp/verify [POST]</strong></li>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>id (from response in <strong>/otp/verify</strong> )</li>
+                        <li>verify: (from response in <strong>/otp/verify</strong> )</li>
+                        <li>phone_number</li>
+                    </ul>
+
+                            <div class="recover" id="recover">
+            <h1 class="">Password Recovery</h1>
+            <hr>
+            <p>Change password <br>This can be done via <strong>Email</strong> or <strong>SMS (OTP)</strong></p>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Recover<strong> - /recover [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>phone_number</li>
+                    </ul>
+                </li>
+                <li>Reset <strong> - /reset [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
                         <li>token</li>
+                        <li>password</li>
                     </ul>
-                    <h5 class="mt-2">Account Recovery</h5>
-                    <li>Send password reset link <strong>- /forgot-password [POST]</strong></li>
+                </li>
+
+                 <h4>Update Password</h4>
+            <ul>
+                <li>Update password<strong> - /update-password [POST]</strong>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
-                        <li>Email address</li>
+                        <li>oldPassword</li>
+                          <li>newPassword</li>
+                            <li>confirmPassword</li>
                     </ul>
-                    <li>Reset password<strong> - /reset-password [POST]</strong></li>
-                    <h6>Body: </h6>
-                    <ul class="alert alert-primary">
-                        <li>new_password</li>
-                    </ul>
+                </li>
+
+            </ul>
+        </div>
                 </ul>
             </ul>
         </div>
@@ -117,21 +140,23 @@
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Create assistant<strong>- /assistant/new [POST]</strong>
+                <li>Create assistant<strong>- /assistant/new [POST]</strong>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>phone_number</li>
                         <li>name</li>
+                        <li>email</li>
+                        <li>password</li>
                     </ul>
                 </li>
                 <li>Retrieve all users<strong>- /assistant [GET]</strong></li>
-                <li>Retrieve user<strong> - /assistant/:assistant_id [GET]</strong>
+                <li>Retrieve user<strong> - /assistant/:assistant_id [GET]</strong>
                     <h6>Params</h6>
                     <ul class="alert alert-primary">
                         <li>customer_id</li>
                     </ul>
                 </li>
-                <li>Update assistant<strong>- /assistant/update/:user_id</strong>
+                <li>Update assistant<strong>- /assistant/update/:assistant_id [PUT]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
                         <li>assistant_id</li>
@@ -141,7 +166,7 @@
                         <li>content[data]</li>
                     </ul>
                 </li>
-                <li>Delete assistant (logical delete)<strong>- /assistant/delete/:user_id</strong></li>
+                <li>Delete assistant (logical delete)<strong>- /assistant/delete/:assistant_id</strong></li>
             </ul>
         </div>
         <div>
@@ -154,6 +179,9 @@
                     <ul class="alert alert-primary">
                         <li>store_name</li>
                         <li>shop_address</li>
+                        <li>tagline</li>
+                        <li>phone_number</li>
+                        <li>email</li>
                     </ul>
                 </li>
                 <li>Retrieve store <strong> - /store/:store_id [GET]</strong>
@@ -163,7 +191,7 @@
                     </ul>
                 </li>
                 <li>Update store<strong> - /store/update/:store_id [PUT]</strong>
-                <h6>Params</h6>
+                <h6>Body</h6>
                 <ul class="alert alert-primary">
                     <li>shop_address</li>
                     <li>store_name</li>
@@ -171,7 +199,7 @@
                 </ul>
                 </li>
                 <li>Delete store<strong> - /store/delete/:store_id [DELETE]</strong>
-                    <h6>Params</h6>
+                    <h6>Body</h6>
                     <ul class="alert alert-primary">
                         <li>current_user</li>
                     </ul>
@@ -205,14 +233,10 @@
                     </ul>
                 </li>
 
-                <li>Retrieve a single complaint<strong> - /complaint/:ownerId [GET]</strong>
+                <li>Retrieve a single complaint<strong> - /complaint/:ownerId/:complaintId [GET]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
                         <li>ownerId- Store Owner's (Business Owner) id </li>
-                    </ul>
-
-                    <h6>Body: </h6>
-                    <ul class="alert alert-primary">
                         <li>complaint_id</li>
                     </ul>
                 </li>
@@ -231,14 +255,10 @@
                         <li>message</li>
                     </ul>
                 </li>
-                <li>Delete a complaint form<strong> - /complaint/delete/:ownerId [DETETE]</strong>
+                <li>Delete a complaint form<strong> - /complaint/delete/:ownerId/:complaintId [DETETE]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
                         <li>ownerId- Store Owner's (Business Owner) id </li>
-                    </ul>
-
-                    <h6>Body: </h6>
-                    <ul class="alert alert-primary">
                         <li>complaint_id</li>
                     </ul>
                 </li>
@@ -249,7 +269,7 @@
             <hr>
             <h4>Endpoints</h4>
             <ul>
-                <li>Add new transaction<strong>- /transaction/new</strong>
+                <li>Add new transaction<strong>- /transaction/new</strong>
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>amount</li>
@@ -257,33 +277,29 @@
                         <li>total_amount</li>
                         <li>description</li>
                         <li>transaction_name</li>
+                        <li>transaction_role</li>
                         <li>type</li>
                         <li>store_name</li>
                         <li>phone_number</li>
                     </ul>
                 </li>
-                <li>View all transactions<strong> - /transaction/all</strong></li>
+                <li>View all transactions<strong> - /transaction</strong></li>
                 <li>view a single transaction<strong> - /transaction/:transaction_id [UPDATE]</strong>
-                    <h6>Params: </h6>
-                    <ul class="alert alert-primary">
-                        <li>transaction_id</li>
-                    </ul>
+                   
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>transaction id </li>
                     </ul>
                 </li>
-                <li>Update transaction<strong> - /transaction/update/:transaction_id</strong>
-                    <h6>Params: </h6>
-                    <ul class="alert alert-primary">
-                        <li>store_name</li>
-                    </ul>
+                <li>Update transaction<strong> - /transaction/update/:transaction_id</strong>
+                                         
                     <h6>Body: </h6>
                     <ul class="alert alert-primary">
                         <li>Entries to update</li>
+                        <li>store_name</li>
                     </ul>
                 </li>
-                <li>Delete transaction (logical delete)<strong>- /transaction/delete/:transaction_id</strong></li>
+                <li>Delete transaction (logical delete)<strong>- /transaction/delete/:transaction_id</strong></li>
             </ul>
         </div>
         <div class="customer" id="customer">
@@ -321,7 +337,56 @@
                         <li>customer_id</li>
                     </ul>
                 </li>
-            </ul>
+                <li>View all customers<strong> - /customer/ [GET]</strong>
+                    
+                </li>
+                
+           
+        </div>
+                <div class="debt" id="debt">
+            <h1 class="">Debt</h1>
+            <hr>
+            <h4>Endpoints</h4>
+            <ul>
+                <li>Create Debt<strong> - /debt/new [POST]</strong>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>transaction_id</li>
+                        <li>customer_phone_number</li>
+                        <li>store_name</li>
+                        <li>amount</li>
+                        <li>status</li>
+                        <li>message</li>
+                        <li>pay_date</li>
+                    </ul>
+                </li>
+                <li>Retrieve debts<strong> - /debt/:debt_id [POST]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>customer_id</li>
+                    </ul>
+                </li>
+                <li>Update debt details<strong> - /debt/update/:debt_id [PUT] </strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>debt_id</li>
+                    </ul>
+                    <h6>Body: </h6>
+                    <ul class="alert alert-primary">
+                        <li>Entries to update</li>
+                    </ul>
+                </li>
+                <li>Delete debt (logical delete)<strong> - /debt/delete/:debt_id [DELETE]</strong>
+                    <h6>Params: </h6>
+                    <ul class="alert alert-primary">
+                        <li>debt_id</li>
+                    </ul>
+                </li>
+                <li>View all debts<strong> - /debt/ [GET]</strong>
+                    
+                </li>
+                
+           
         </div>
         <div class="notification" id="notification">
             <h1 class="">Notification</h1>
@@ -329,7 +394,7 @@
             <p>Notify a customer of outstanding payments or even send them a season's greeting. <br>This can e done via <strong>Email</strong> or <strong>SMS</strong></p>
             <h4>Endpoints</h4>
             <ul>
-                <li>Send SMS reminder<strong> - /reminder/sms/:customer_id [POST]</strong>
+                <li>Send SMS reminder<strong> - /reminder/sms/:customer_id [POST]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
                         <li>customer_id</li>
@@ -339,7 +404,7 @@
                         <li>message</li>
                     </ul>
                 </li>
-                <li>Send Email reminder <strong> - /reminder/email/:customer_id [POST]</strong>
+                <li>Send Email reminder <strong> - /reminder/email/:customer_id [POST]</strong>
                     <h6>Params: </h6>
                     <ul class="alert alert-primary">
                         <li>customer_id</li>
@@ -353,6 +418,7 @@
                 </li>
             </ul>
         </div>
+
         <!-- <div class="call" id="call">
             <h1 class="">Call</h1>
             <hr>

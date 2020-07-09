@@ -43,12 +43,11 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
 
   try {
-    const complaint_id = req.body.complaint_id;
-    const store_admin_id = req.params.ownerId;
+    const { ownerId, complaintId } = req.params;
 
-    const storeAdmin = await StoreOwner.findById(store_admin_id);
+    const storeAdmin = await StoreOwner.findById(ownerId);
 
-    const complaint = storeAdmin.complaints.id(complaint_id);
+    const complaint = storeAdmin.complaints.id(complaintId);
 
     if (!complaint) {
       res.status(422).send({
@@ -129,16 +128,14 @@ exports.update = async (req, res) => {
 // @access      Private
 exports.deleteOne = async (req, res) => {
   
-  try {
-    const complaint_id = req.body.complaint_id;
-    
-    const store_admin_id = req.params.ownerId;
+  try {    
+    const { ownerId, complaintId } = req.params;
 
-    const storeAdmin = await StoreOwner.findById(store_admin_id);
+    const storeAdmin = await StoreOwner.findById(ownerId);
 
     const complaints  = storeAdmin.complaints;
 
-    const complaint = complaints.id(complaint_id);
+    const complaint = complaints.id(complaintId);
     
     complaint.remove();
 

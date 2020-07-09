@@ -1,5 +1,3 @@
-const Response = require("../util/response_manager");
-const HttpStatus = require("../util/http_status");
 const Transaction = require("../models/transaction");
 const UserModel = require("../models/store_admin");
 const StoreModel = require("../models/store");
@@ -24,6 +22,7 @@ exports.create = (req, res, next) => {
     total_amount,
     description,
     type,
+    store_name,
     transaction_name,
     transaction_role,
   };
@@ -38,7 +37,7 @@ exports.create = (req, res, next) => {
       stores.forEach((store) => {
         if (store.store_name == store_name) {
           store_ref_id = store._id;
-          customers = store.customers;
+          var customers = store.customers;
           if (customers.length > 0) {
             customers.forEach((customer) => {
               if (customer.phone_number == phone_number) {
@@ -46,6 +45,8 @@ exports.create = (req, res, next) => {
 
                 req_keys.customer_ref_id = customer_ref_id;
                 req_keys.store_ref_id = store_ref_id;
+                req_keys.debts = [];
+                req_keys.store_name = store_name;
 
                 customer.transactions.push(req_keys);
               }
@@ -114,14 +115,6 @@ exports.findAll = async (req, res, next) => {
           obj.transactions = customer.transactions;
 
           details.push(obj);
-
-          return res.status(200).json({
-            success: true,
-            message: "Operation successful",
-            data: {
-              details,
-            },
-          });
         });
       });
 
@@ -132,6 +125,14 @@ exports.findAll = async (req, res, next) => {
           error: {
             code: 404,
             message: "No transaction associated with this user account",
+          },
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: "Here is a list of your transactions",
+          data: {
+            details,
           },
         });
       }
@@ -167,6 +168,7 @@ exports.findOne = (req, res, next) => {
                 success: true,
                 Message: "Operation successful",
                 data: {
+                  storeName: store.store_name,
                   transaction,
                 },
               });
@@ -201,22 +203,32 @@ exports.findOne = (req, res, next) => {
 exports.update = async (req, res, next) => {
   const identifier = req.user.phone_number;
   const id = req.params.transaction_id;
-  const { store_name, description, amount, interest, total_amount, transaction_name, transaction_role, type } = req.body;
+  const {
+    store_name,
+    description,
+    amount,
+    interest,
+    total_amount,
+    transaction_name,
+    transaction_role,
+    type,
+  } = req.body;
 
   try {
-
     UserModel.findOne({ identifier })
-      .then(user => {
-        let store = user.stores.find(store => store.store_name == store_name); //find store
+      .then((user) => {
+        let store = user.stores.find((store) => store.store_name == store_name); //find store
         let allTransactions = []; // all transactions would be pushed here
 
-        store.customers.forEach(customer => { // loop over customers
-          customer.transactions.forEach(trans => { //loop over transactions
+        store.customers.forEach((customer) => {
+          // loop over customers
+          customer.transactions.forEach((trans) => {
+            //loop over transactions
             allTransactions.push(trans); //push all transactions to allTransactions
-          })
+          });
         });
 
-        let transToUpdate = allTransactions.find(trans => trans._id == id); // find transaction required
+        let transToUpdate = allTransactions.find((trans) => trans._id == id); // find transaction required
 
         let update = {
           amount: amount || transToUpdate.amount,
@@ -225,21 +237,22 @@ exports.update = async (req, res, next) => {
           total_amount: total_amount || transToUpdate.total_amount,
           transaction_role: transaction_role || transToUpdate.transaction_role,
           transaction_name: transaction_name || transToUpdate.transaction_name,
-          type: type || transToUpdate.type
-        } // update with field from req.body or if null still use the value already in db
+          type: type || transToUpdate.type,
+        }; // update with field from req.body or if null still use the value already in db
 
         transToUpdate = Object.assign(transToUpdate, update); // merge update
 
-        user.save()
-          .then(result => {
+        user
+          .save()
+          .then((result) => {
             res.status(200).json({
               success: true,
               message: "Transaction updated successfully",
               data: {
-                  statusCode: 200,
-                  transaction: transToUpdate
-              }
-            })
+                statusCode: 200,
+                transaction: transToUpdate,
+              },
+            });
           })
           .catch((err) => {
             res.status(500).json({
@@ -247,32 +260,30 @@ exports.update = async (req, res, next) => {
               message: "Couldn't update transaction",
               error: {
                 statusCode: 500,
-                message: "Couldn't update transaction"
-              }
-            })
-          })
-        
+                message: "Couldn't update transaction",
+              },
+            });
+          });
       })
-      .catch(err => {
+      .catch((err) => {
         res.status(404).json({
           sucess: false,
           message: "User not found",
           error: {
             statusCode: 404,
-            message: "User not found"
-          }
-        })
-      })
-
+            message: "User not found",
+          },
+        });
+      });
   } catch (error) {
     res.status(500).json({
       sucess: false,
       message: "Couldn't update transaction",
       error: {
         statusCode: 500,
-        message: "Couldn't update transaction"
-      }
-    })
+        message: "Couldn't update transaction",
+      },
+    });
   }
 };
 
