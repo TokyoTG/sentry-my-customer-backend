@@ -52,8 +52,6 @@ exports.send = async (req, res) => {
 
     const otpSaveResult = await otp.save();
 
-    console.log("otpSaveResult", otpSaveResult);
-
     if (!otpSaveResult) {
       return res.status(500).json({
         success: false,
@@ -74,19 +72,19 @@ exports.send = async (req, res) => {
       }
     });
     
-    const sms = africastalking.SMS;
-    await sms.send({
-      to: [`+${req.body.phone_number}`],
-      message: `Your number verification to MyCustomer is ${otpSaveResult.otp_code}`
-    });
+    // const sms = africastalking.SMS;
+    // await sms.send({
+    //   to: [`+${req.body.phone_number}`],
+    //   message: `Your number verification to MyCustomer is ${otpSaveResult.otp_code}`
+    // });
 
-    res.status(200).json({
-      success: true,
-      message: "successful",
-      data: {
-        message: "successful"
-      }
-    });
+    // res.status(200).json({
+    //   success: true,
+    //   message: "successful",
+    //   data: {
+    //     message: "successful"
+    //   }
+    // });
   } catch (err) {
     res.status(500).json({
       success: false,

@@ -6,7 +6,7 @@ const verifyToken = (req, res, next) => {
 
   if (!token) {
     return res.status(403).send({
-      success: "false",
+      success: false,
       message: "Token is required for verification",
       error: {
         statusCode: 403,
@@ -19,7 +19,7 @@ const verifyToken = (req, res, next) => {
   jwt.verify(token, config.JWT_KEY, function(err, decoded) {
     if (err){
 		  return res.status(401).send({
-        success: "false",
+        success: false,
         message: "Invalid Token",
         error:{
           statusCode: 401,
